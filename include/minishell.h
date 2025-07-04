@@ -5,12 +5,11 @@
 #include <unistd.h>
 #include "colors.h"
 # include <fcntl.h>
+# include <stdio.h>
 #include <readline/history.h>
 #include <readline/readline.h>
-# include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
-
 # include <unistd.h>
 typedef struct s_data{
 	char* prompt;
@@ -63,5 +62,9 @@ char	*ft_strdup(const char *src);
 size_t	ft_strlen(const char *s);
 int ft_strncmp(const char *s1, const char *s2, size_t n);
 void *ft_memcpy(void *dest, const void *src, size_t n);
+
+// Signal functions
+void setup_signals(void);
+
 
 #endif
