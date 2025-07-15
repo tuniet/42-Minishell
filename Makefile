@@ -5,20 +5,21 @@ HEADER_FILE	=		$(INC_DIR)/minishell.h
 
 SRC_DIR		=		./src
 SRCS		=		$(addprefix $(SRC_DIR)/, \
-					init.c prompt.c string.c tokenizer.c\
-					main.c )
+					init.c prompt.c string.c tokenizer.c \
+					main.c signals.c execute.c )
 
 OBJ_DIR		=		./obj
 OBJS		=		$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 CFLAGS		=		-Wall -Wextra -Werror
-LDFLAGS		=		-lreadline -lhistory
+CFLAGS		=		-Werror
+LDFLAGS		=		-lreadline #-lhistory
 CC			=		cc
 
 all:	${NAME}
 
 $(NAME): $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) -L$(LIBFT) -lft -o $(NAME) $(LDFLAGS) && \
+	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LDFLAGS) && \
 	(printf "[minishell] Compiled successfully.\n")
 
 $(OBJ_DIR)/%.o:	$(SRC_DIR)/%.c $(HEADER_FILE)

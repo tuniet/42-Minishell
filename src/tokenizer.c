@@ -148,7 +148,7 @@ void print_tree(t_treenode *node, int depth, char side) {
 	print_tree(node->left, depth + 1, 'L');
 }
 
-int parse_line(char *line)
+int parse_line(char *line, t_data *data)
 {
     t_treenode *tree;
     tree = NULL;
@@ -159,6 +159,8 @@ int parse_line(char *line)
 
     print_tree(tree, 0, 's'); // For Debug, this prints visually the tree structure
     //p_treenode(tree); //For Debug,  Print the tree structure as text
+	
+	execute_tree(tree, data->envp);
     return (1);
 }
 //< infile ls -l | wc -l | grep al > outfile

@@ -2,7 +2,8 @@
 
 int main(int argc, char **argv, char **envp)
 {
-	t_data data;
+	t_data	data;
+
 	if(argc > 1 || argv[1] != NULL)
 		return (printf("Usage: %s\n", argv[0]), 1);
 	if(!init_data(&data, envp))
@@ -10,8 +11,8 @@ int main(int argc, char **argv, char **envp)
 
 	setup_signals();
 
-	using_history();
-	read_history(".minishell_history");
+	//using_history();
+	//read_history(".minishell_history");
 
 	char	*line;
 	while (1)
@@ -42,8 +43,9 @@ int main(int argc, char **argv, char **envp)
 			printf("\033[H\033[J");
 			continue;
 		}
-		else{
-			parse_line(line);
+		else
+		{
+			parse_line(line, &data);
 			free(line);
 		}
 	}

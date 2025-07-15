@@ -10,7 +10,7 @@
 #include <readline/readline.h>
 # include <stdlib.h>
 # include <string.h>
-# include <unistd.h>
+
 typedef struct s_data{
 	char* prompt;
 	char* pwd;
@@ -49,11 +49,12 @@ typedef struct s_treenode
 int set_prompt(t_data* data);
 int get_prompt(char **p, t_data *data);
 int init_data(t_data *data, char *envp[]);
+char		*mini_getenv(char *var, char *envp[]);
 
 // tokenizer functions
 t_treenode		*tokenize(char *line);
 void		free_tokens(t_treenode *tokens);
-int 		parse_line(char *line);
+int 		parse_line(char *line, t_data *data);
 
 // String functions
 char	*ft_strcpy(char *dest, char *src);
@@ -66,5 +67,7 @@ void *ft_memcpy(void *dest, const void *src, size_t n);
 // Signal functions
 void setup_signals(void);
 
+// Execute tree
+void		execute_tree(t_treenode *node, char **envp);
 
 #endif
