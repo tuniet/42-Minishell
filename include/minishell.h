@@ -11,6 +11,10 @@
 # include <stdlib.h>
 # include <string.h>
 
+// FUNCTIONS DEFS
+typedef int (*is_delimiter_t)(int c);
+
+// STRUCTS
 typedef struct s_data{
 	char* prompt;
 	char* pwd;
@@ -22,28 +26,45 @@ typedef struct s_data{
 
 typedef enum e_node_type
 {
-	TOKEN_WORD,
-	TOKEN_PIPE,
-	TOKEN_REDIRECT_IN,
-	TOKEN_REDIRECT_OUT,
-	//TOKEN_APPEND,
-	TOKEN_HEREDOC,
-	TOKEN_SEMICOLON,
-	//TOKEN_AND,
-	//TOKEN_OR,
-	TOKEN_VARIABLE,
-	TOKEN_ENV_VAR,
-	TOKEN_COMMAND
+	TOKEN_WORD = 0,
+	TOKEN_PIPE = 1,
+	TOKEN_REDIRECT_IN = 2,
+	TOKEN_REDIRECT_OUT = 3,
+	TOKEN_APPEND = 4,
+	TOKEN_HEREDOC = 5,
+	//TOKEN_SEMICOLON,
+	TOKEN_AND = 6,
+	TOKEN_OR = 7,
+	TOKEN_VARIABLE = 8,//TODO : implement at executing time
+	TOKEN_ENV_VAR = 9,//TODO : implement at executing time
+	TOKEN_COMMAND = 10,//TODO : implement at executing time
+	TOKEN_AMPERSANT = 11//TODO : implement at executing time
 } t_node_type;
 
-typedef struct s_treenode
-{
+// TREE STRUCTS
+typedef struct s_redirect {
 	t_node_type			type;
-	char 				*content;
-	struct s_treenode 	*left;
-	struct s_treenode 	*right;
+	char				*filename;
+	struct s_redirect	*next;
+}	t_redirect;
 
-} t_treenode;
+typedef struct s_command {
+	char		**argv;
+	t_redirect	*redirects;
+}	t_command;
+
+typedef struct s_treenode {
+	t_node_type			type;
+	struct s_treenode	*left;
+	struct s_treenode	*right;
+	t_command			*cmd;
+}	t_treenode;
+
+// TOKENS STRUCT
+typedef struct s_token {
+	t_node_type	type;
+	char		*content;
+}	t_token;
 
 // Prompt functions
 int set_prompt(t_data* data);
@@ -52,9 +73,22 @@ int init_data(t_data *data, char *envp[]);
 char		*mini_getenv(char *var, char *envp[]);
 
 // tokenizer functions
-t_treenode		*tokenize(char *line);
-void		free_tokens(t_treenode *tokens);
+int			tokenize(char *line, t_token **tokens);
+void		free_tokens(t_token *tokens);
 int 		parse_line(char *line, t_data *data);
+
+// parsing functions
+t_treenode	*build_tree(t_token *tokens[], int start, int end);
+void		print_tree(t_treenode *node, int level);
+// parsing utils:
+t_command	*init_command(void);
+void		print_tree(t_treenode *node, int level);
+int			is_redirection(t_node_type type);
+t_treenode	*new_node(t_node_type type);
+
+// Aux functions
+int			is_metachar(int c);
+char		*get_token_end(char *line);
 
 // String functions
 char	*ft_strcpy(char *dest, char *src);
@@ -68,6 +102,8 @@ void *ft_memcpy(void *dest, const void *src, size_t n);
 void setup_signals(void);
 
 // Execute tree
-void		execute_tree(t_treenode *node, char **envp);
+int		execute_tree(t_treenode *node, char **envp);
+// Execute Utils
+char	*find_executable(char *command, char **envp);
 
 #endif

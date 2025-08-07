@@ -1,166 +1,139 @@
 #include "../include/minishell.h"
 
+void	print_tokens(t_token **tokens, int count);
+
 static t_node_type	get_token_type(const char *str)
 {
-    if (strcmp(str, "|") == 0)
-        return TOKEN_PIPE;
-    if (strcmp(str, "<") == 0)
-        return TOKEN_REDIRECT_IN;
-    if (strcmp(str, ">") == 0)
-        return TOKEN_REDIRECT_OUT;
-    return TOKEN_WORD;
+	if (strcmp(str, "<<") == 0)
+		return (TOKEN_HEREDOC);
+	if (strcmp(str, ">>") == 0)
+		return (TOKEN_APPEND);
+	if (strcmp(str, "&&") == 0)
+		return (TOKEN_AND);
+	if (strcmp(str, "||") == 0)
+		return (TOKEN_OR);
+	if (strcmp(str, "|") == 0)
+		return (TOKEN_PIPE);
+	if (strcmp(str, "<") == 0)
+		return (TOKEN_REDIRECT_IN);
+	if (strcmp(str, ">") == 0)
+		return (TOKEN_REDIRECT_OUT);
+	if (strcmp(str, "&") == 0)
+		return (TOKEN_AMPERSANT);
+	return (TOKEN_WORD);
 }
 
-static t_treenode *new_node(t_node_type type, char *content) {
-	t_treenode *node = malloc(sizeof(t_treenode));
+t_token	*new_token(t_node_type type, char *content)
+{
+	t_token	*node;
+
+	node = malloc(sizeof(t_token));
+	if (!node)
+		return (NULL);//TODO: Exit program. Malloc error
 	node->type = type;
 	node->content = ft_strdup(content);
-	node->left = NULL;
-	node->right = NULL;
-	return node;
-}
-
-static int get_priority(t_node_type type) {
-	if (type == TOKEN_PIPE)
-		return 1;
-	if (type == TOKEN_REDIRECT_IN || type == TOKEN_REDIRECT_OUT)
-		return 2;
-	return 3;
-}
-
-static t_treenode *build_tree(t_treenode **tokens, int start, int end) {
-	if (start > end)
-		return NULL;
-	if (start == end)
-		return tokens[start];
-
-	int op = -1;
-	int min_prio = 1000;
-
-	for (int i = end; i >= start; i--) {
-		int prio = get_priority(tokens[i]->type);
-		if (prio <= min_prio) {
-			min_prio = prio;
-			op = i;
-		}
+	if (!(node->content))
+	{
+		free(node);
+		return (NULL);//TODO: Exit program. Malloc error
 	}
-
-	t_treenode *root = tokens[op];
-	if (root->type == TOKEN_REDIRECT_IN || root->type == TOKEN_REDIRECT_OUT) {
-		if (op + 1 > end)
-			return root;
-
-		root->left = tokens[op + 1];
-
-		if (op + 2 <= end) {
-			root->right = build_tree(tokens, op + 2, end);
-		} else {
-			root->right = build_tree(tokens, start, op - 1);
-		}
-		return root;
-	}
-
-	root->left = build_tree(tokens, start, op - 1);
-	root->right = build_tree(tokens, op + 1, end);
-	return root;
+	return (node);
 }
 
-static int group_tokens(t_treenode **tokens, int count) {
-	t_treenode *grouped[256];
-	int i = 0, j = 0;
-
-	while (i < count) {
-		if (i > 0 && (tokens[i - 1]->type == TOKEN_REDIRECT_IN || tokens[i - 1]->type == TOKEN_REDIRECT_OUT)) {
-			grouped[j++] = tokens[i++];
-			continue;
-		}
-
-		if (tokens[i]->type == TOKEN_WORD) {
-			char buffer[1024] = {0};
-			while (i < count && tokens[i]->type == TOKEN_WORD) {
-				if (i > 0 && (tokens[i - 1]->type == TOKEN_REDIRECT_IN || tokens[i - 1]->type == TOKEN_REDIRECT_OUT))
-					break;
-				ft_strcat(buffer, tokens[i]->content);
-				if (i + 1 < count && tokens[i + 1]->type == TOKEN_WORD)
-					ft_strcat(buffer, " ");
-				i++;
-			}
-			grouped[j++] = new_node(TOKEN_COMMAND, buffer);
-		} else {
-			grouped[j++] = tokens[i++];
-		}
-	}
-
-	for (i = 0; i < j; i++)
-		tokens[i] = grouped[i];
-	return j;
-}
-
-void create_tree(char *line, t_treenode **tree) {
-	t_treenode *tokens[256];
-	int count = 0;
-	int i = 0;
-
-	while (line[i]) {
-		while (line[i] && (line[i] == ' ' || line[i] == '\t'))
-			i++;
-		if (!line[i])
-			break;
-		if (line[i] == '|' || line[i] == '<' || line[i] == '>') {
-			char sym[2] = {line[i], '\0'};
-			tokens[count++] = new_node(get_token_type(sym), sym);
-			i++;
-			continue;
-		}
-		int start = i;
-		while (line[i] && line[i] != ' ' && line[i] != '\t' &&
-			   line[i] != '|' && line[i] != '<' && line[i] != '>')
-			i++;
-
-		int len = i - start;
-		if (len > 0) {
-			char word[256];
-			strncpy(word, &line[start], len);
-			word[len] = '\0';
-			tokens[count++] = new_node(get_token_type(word), word);
-		}
-	}
-	count = group_tokens(tokens, count);
-	*tree = build_tree(tokens, 0, count - 1);
-}
-
-void p_treenode(t_treenode *node) {
-    if (!node)
-        return;
-
-    printf("Node Type: %d, Content: %s\n", node->type, node->content);
-    p_treenode(node->left);
-    p_treenode(node->right);
-}
-
-void print_tree(t_treenode *node, int depth, char side) {
-	if (!node)
-		return;
-	print_tree(node->right, depth + 1, 'R');
-	for (int i = 0; i < depth; i++)
-		printf("           ");
-	printf("%c─[%d] %s\n", side, node->type, node->content);
-	print_tree(node->left, depth + 1, 'L');
-}
-
-int parse_line(char *line, t_data *data)
+char	*get_token(char *c, t_token **token)
 {
-    t_treenode *tree;
-    tree = NULL;
-    if (line == NULL || line[0] == '\0')
-        return (0);
+	char	*end;
+	char	*cpToken;
 
-    create_tree(line, &tree);
-
-    print_tree(tree, 0, 's'); // For Debug, this prints visually the tree structure
-    //p_treenode(tree); //For Debug,  Print the tree structure as text
-	
-	execute_tree(tree, data->envp);
-    return (1);
+	while (*c == ' ' || *c == '\t')
+		c++;
+	if (*c == '\0')
+		return (c);
+	//printf("start : %c\n", *c);
+	end = get_token_end(c);
+	//printf("end : %c\n", *(end));
+	cpToken = (char *)malloc(end - c + 1);
+	if (!cpToken)
+		return (NULL); //Call exit program (malloc error : -2)
+	strlcpy(cpToken, c, (end - c) + 1);
+	//printf("Token: %s\n", cpToken);
+	*token = new_token(get_token_type(cpToken), cpToken);
+	free(cpToken);
+	return (end);
 }
-//< infile ls -l | wc -l | grep al > outfile
+
+int	tokenize(char *line, t_token **tokens)
+{
+	int			iCount;
+	t_token		*tToken;
+	char		*pcAux;
+
+	iCount = 0;
+	pcAux = line;
+	while (*pcAux)
+	{
+		tToken = NULL;
+		pcAux = get_token(pcAux, &tToken);
+		if (tToken != NULL)
+			tokens[iCount++] = tToken;
+		while (*pcAux == ' ' || *pcAux == '\t')
+			pcAux++;
+	}
+	return (iCount);
+}
+
+int	create_tree(char *line, t_treenode **tree)
+{
+	//t_treenode	**tokens;
+	//TODO: do it with realloc instead!
+	t_token		*tokens[100];
+	int			count;
+	int			i;
+
+	i = 0;
+	count = tokenize(line, tokens);
+	//NOTE: For debugging tokenizer
+	print_tokens(tokens, count);
+	//
+	*tree = build_tree(tokens, 0, count -1);
+	if (!(*tree))
+		return (1);
+	return (0);
+}
+
+void	print_tokens(t_token **tokens, int count)
+{
+	for (int i = 0; i < count; i++)
+		printf("[%d] Type: %d | Value: %s\n", i, tokens[i]->type, tokens[i]->content);
+}
+
+int	parse_line(char *line, t_data *data)
+{
+	t_treenode	*tree;
+	int			iRet;
+
+	iRet = 0;
+	tree = NULL;
+	if (line == NULL || line[0] == '\0')
+		return (0);
+	iRet = create_tree(line, &tree);
+	if (iRet == 0)
+        print_tree(tree, 0);
+	else
+	{
+		printf("Error ast creation!\n");
+		return (0);
+	}
+
+	//print_tree(tree, 0, 's'); // For Debug, this prints visually the tree structure
+	//p_treenode(tree); //For Debug,  Print the tree structure as text
+
+	//TODO: to implement and test
+	execute_tree(tree, data->envp);
+	return (1);
+}
+
+//TODO : TEST IT
+// < infile ls -l | wc -l | grep al > outfile
+// > out cat < Makefile
+
