@@ -7,7 +7,9 @@ t_command *init_command(void)
 	cmd = calloc(1, sizeof(t_command));
 	if (!cmd)
 		return (NULL);
-	cmd->argv = malloc(sizeof(char *) * 1); // start with 1 (null-terminated)
+	cmd->argc = 0;
+	cmd->capacity = 10;
+	cmd->argv = malloc(sizeof(t_token) * cmd->capacity);
 	if (!cmd->argv)
 	{
 		free(cmd);
@@ -45,7 +47,7 @@ void	print_tree(t_treenode *node, int level)
 			i = 0;
 			while (node->cmd->argv[i])
 			{
-				printf(" %s", node->cmd->argv[i]);
+				printf(" %s", node->cmd->argv[i]->content);
 				i++;
 			}
 		}
@@ -79,7 +81,7 @@ int is_redirection(t_node_type type)
 
 t_treenode *new_node(t_node_type type)
 {
-	t_treenode *node;
+	t_treenode	*node;
 
 	node = malloc(sizeof(t_treenode));
 	if (!node)

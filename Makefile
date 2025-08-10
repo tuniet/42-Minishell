@@ -8,13 +8,15 @@ SRCS		=		$(addprefix $(SRC_DIR)/, \
 					init.c prompt.c string.c tokenizer.c \
 					main.c signals.c aux.c \
 					execute.c execute_utils.c \
-					tree.c tree_utils.c )
+					tree.c tree_utils.c free_tree.c \
+					free.c mem.c )
 
 OBJ_DIR		=		./obj
 OBJS		=		$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 CFLAGS		=		-Wall -Wextra -Werror
-CFLAGS		=		-g -Werror
+#CFLAGS		=		-g -O0 -Werror
+CFLAGS		=		-g -fsanitize=address -Werror
 LDFLAGS		=		-lreadline #-lhistory
 CC			=		cc
 

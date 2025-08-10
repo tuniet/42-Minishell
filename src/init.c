@@ -28,7 +28,6 @@ char	**cpy_env(char *envp[])
 	return (cpy);
 }
 
-
 void init_nulls(t_data* data)
 {
 	data->prompt = NULL;
@@ -37,6 +36,9 @@ void init_nulls(t_data* data)
 	data->user = NULL;
 	data->host = NULL;
 	data->envp = NULL;
+	data->tokens_size = 0;
+	data->ast_root = NULL;
+	data->iExit = 0;
 }
 
 int	init_data(t_data *data, char *envp[])
@@ -50,6 +52,7 @@ int	init_data(t_data *data, char *envp[])
 		if (data->envp == NULL)
 			return (0);
 	}
+	memset(data->tokens, 0x0, sizeof(data->tokens));
 	data->pwd = getcwd(NULL, 0);
 	return (1);
 }

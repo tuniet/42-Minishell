@@ -1,22 +1,23 @@
 #include "../include/minishell.h"
 
-static int	add_argument(t_command *cmd, char *arg)
+static int add_argument(t_command *cmd, t_token *arg)
 {
-	int		count;
-	char	**new_argv;
+	t_token	**new_argv;
+	size_t	new_capacity;
 
-	count = 0;
-	while (cmd->argv[count])
-		count++;
-
-	new_argv = realloc(cmd->argv, sizeof(char *) * (count + 2));
-	if (!new_argv)
-		return (-1);
-
-	new_argv[count] = ft_strdup(arg);
-	new_argv[count + 1] = NULL;
-	cmd->argv = new_argv;
-	return (0);
+	if (cmd->argc + 1 >= cmd->capacity)
+	{
+		new_capacity = cmd->capacity * 2;
+		new_argv = realloc(cmd->argv, sizeof(t_token *) * new_capacity);
+		if (!new_argv)
+			return (0);
+		cmd->argv = new_argv;
+		cmd->capacity = new_capacity;
+	}
+	cmd->argv[cmd->argc] = arg;
+	cmd->argc++;
+	cmd->argv[cmd->argc] = NULL;
+	return (1);
 }
 
 static int	add_redirection(t_command *cmd, t_node_type type, char *filename)
@@ -26,12 +27,15 @@ static int	add_redirection(t_command *cmd, t_node_type type, char *filename)
 
 	redir = malloc(sizeof(t_redirect));
 	if (!redir)
-		return (-1);
-
+		return (0);
 	redir->type = type;
 	redir->filename = ft_strdup(filename);
+	if (!redir->filename)
+	{
+		free(redir);
+		return (0);
+	}
 	redir->next = NULL;
-
 	if (!cmd->redirects)
 		cmd->redirects = redir;
 	else
@@ -41,7 +45,7 @@ static int	add_redirection(t_command *cmd, t_node_type type, char *filename)
 			tmp = tmp->next;
 		tmp->next = redir;
 	}
-	return (0);
+	return (1);
 }
 
 t_treenode *parse_simple_command(t_token *tokens[], int start, int end)
@@ -58,79 +62,74 @@ t_treenode *parse_simple_command(t_token *tokens[], int start, int end)
 	{
 		if (tokens[i]->type == TOKEN_WORD)
 		{
-			if (add_argument(cmd, tokens[i]->content) != 0)
-				return (NULL); // free needed
+			//NOTE : cmd->argv, does not allocate new tokens
+			if (!add_argument(cmd, tokens[i]))
+				return (free_command(cmd), NULL);
 		}
 		else if (is_redirection(tokens[i]->type))
 		{
 			if (i + 1 > end || tokens[i + 1]->type != TOKEN_WORD)
-				return (NULL);
-			if (add_redirection(cmd, tokens[i]->type, tokens[i + 1]->content) != 0)
-				return (NULL);
+				return (free_command(cmd), NULL);
+			if (!add_redirection(cmd, tokens[i]->type, tokens[i + 1]->content))
+				return (free_command(cmd), NULL);
 			i++;
 		}
 		else
-			return (NULL);
+			return (free_command(cmd), NULL);
 		i++;
 	}
-	//TODO: Error no command
+	//TODO: Error redirection without a valid command
 	if (!cmd->argv || !cmd->argv[0])
-	{
-		//free_command(cmd);
-		return (NULL);
-	}
-
+		return (free_command(cmd), NULL);
 	node = new_node(TOKEN_COMMAND);
 	if (!node)
-		return (NULL);
+		return (free_command(cmd), NULL);
 	node->cmd = cmd;
+	return (node);
+}
+
+static t_treenode *build_binary_node(t_token *tokens[], int start, int end, int op_index)
+{
+	t_treenode	*node;
+	t_treenode	*left;
+	t_treenode	*right;
+
+	node = new_node(tokens[op_index]->type);
+	if (!node)
+		return (NULL);
+	left = build_tree(tokens, start, op_index - 1);
+	if (!left)
+		return (free(node), NULL);
+	right = build_tree(tokens, op_index + 1, end);
+	if (!right)
+	{
+		free_tree(left);
+		free(node);
+		return (NULL);
+	}
+	node->left = left;
+	node->right = right;
 	return (node);
 }
 
 t_treenode	*build_tree(t_token *tokens[], int start, int end)
 {
-	t_treenode	*node;
-	t_treenode	*left;
-	t_treenode	*right;
 	int			i;
 
 	if (start > end)
 		return (NULL);
-
 	i = start;
 	while (i <= end)
 	{
 		if (tokens[i]->type == TOKEN_AND || tokens[i]->type == TOKEN_OR)
-		{
-			node = new_node(tokens[i]->type);
-			if (!node)
-				return (NULL);
-			left = build_tree(tokens, start, i - 1);
-			right = build_tree(tokens, i + 1, end);
-			if (!left || !right)
-				return (NULL);
-			node->left = left;
-			node->right = right;
-			return (node);
-		}
+			return (build_binary_node(tokens, start, end, i));
 		i++;
 	}
 	i = start;
 	while (i <= end)
 	{
 		if (tokens[i]->type == TOKEN_PIPE)
-		{
-			node = new_node(TOKEN_PIPE);
-			if (!node)
-				return (NULL);
-			left = build_tree(tokens, start, i - 1);
-			right = build_tree(tokens, i + 1, end);
-			if (!left || !right)
-				return (NULL);
-			node->left = left;
-			node->right = right;
-			return (node);
-		}
+			return (build_binary_node(tokens, start, end, i));
 		i++;
 	}
 	return (parse_simple_command(tokens, start, end));

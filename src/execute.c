@@ -1,4 +1,5 @@
 #include "../include/minishell.h"
+/*
 
 int execute_tree(t_treenode *node, char **envp);
 
@@ -37,6 +38,7 @@ int	execute_command_node(t_treenode *node, char **envp)
 	pid_t	pid;
 	int		status;
 	char	*path;
+	char	**argv;
 
 	pid = fork();
 	if (pid == 0)
@@ -46,6 +48,12 @@ int	execute_command_node(t_treenode *node, char **envp)
 			perror("Redirection error");
 			exit(1);
 		}
+		//TODO: Expand $variables and $variables within quoted (") tokens in cmd->arg
+		//Should we make a struct to know if the token is quoted      ????
+		argv = expand(node->cmd->argv, node->cmd->argc, envp);
+		if (!argv)
+			return (NULL);
+	
 		//TODO: Add built-ins check here
 		path = find_executable(node->cmd->argv[0], envp);
 		fprintf(stderr, "CMD Path : %s\n\n", path);
@@ -135,3 +143,4 @@ int execute_tree(t_treenode *node, char **envp)
 	return (1);
 }
 
+*/
