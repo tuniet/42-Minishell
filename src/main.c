@@ -12,12 +12,14 @@
 
 #include "../include/minishell.h"
 
+/*
 void	print_tokens(t_token **tokens, int count)
 {
-	for (int i = 0; i < count; i++)
-		printf("[%d] Type: %d | Value: %s\n", i, tokens[i]->type, tokens[i]->content);
+	while (int i = 0; i < count; i++)
+		printf("[%d] Type: %d | Value: %s\n", i, tokens[i]->type,
+			tokens[i]->content);
 }
-
+*/
 int	compute_line(char *line, t_data *data)
 {
 	int	count;
@@ -29,9 +31,7 @@ int	compute_line(char *line, t_data *data)
 		return (0);
 	data->tokens_size = count;
 	printf("tokens_size = [%d]\n", data->tokens_size);
-	//
 	print_tokens(data->tokens, data->tokens_size);
-	//
 	data->ast_root = build_tree(data->tokens, 0, count - 1);
 	if (!data->ast_root)
 		return (0);
@@ -49,7 +49,6 @@ static int	handle_input(char *line, t_data *data)
 		free(line);
 		return (0);
 	}
-	//printf("------> compute_line success\n");
 	free(line);
 	free_all(data, 0);
 	return (1);
@@ -63,13 +62,13 @@ int	main_loop(t_data *data)
 	while (1)
 	{
 		if (get_prompt(&data->prompt, data) == 0)
-			break;
+			break ;
 		line = readline(data->prompt);
 		mini_free((void **)&data->prompt);
 		if (!line)
 		{
 			printf("exit\n");
-			break;
+			break ;
 		}
 		if (line[0])
 			add_history(line);
@@ -82,15 +81,13 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
 
-	if(argc > 1)
+	if (argc > 1)
 		return (printf("Usage: %s\n", argv[0]), 1);
-	if(!init_data(&data, envp))
+	if (!init_data(&data, envp))
 		return (1);
 	setup_signals();
 	main_loop(&data);
-	//return (rl_clear_history(), free_all(&data), 0);
 	if (data.iExit)
 		printf("data iExit val :  %d\n", data.iExit);
 	return (free_all(&data, 1), data.iExit);
-	//return (free_all(&data, 1), 0);
 }

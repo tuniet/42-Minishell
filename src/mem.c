@@ -12,7 +12,7 @@
 
 #include "../include/minishell.h"
 
-void mini_free(void **ptr)
+void	mini_free(void **ptr)
 {
 	if (ptr && *ptr)
 	{
@@ -20,4 +20,3 @@ void mini_free(void **ptr)
 		*ptr = NULL;
 	}
 }
-

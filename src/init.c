@@ -40,7 +40,7 @@ char	**cpy_env(char *envp[])
 	return (cpy);
 }
 
-void init_nulls(t_data* data)
+void	init_nulls(t_data *data)
 {
 	data->prompt = NULL;
 	data->pwd = NULL;
@@ -57,7 +57,7 @@ int	init_data(t_data *data, char *envp[])
 {
 	init_nulls(data);
 	if (envp == NULL || envp[0] == NULL || envp[0][0] == '\0')
-		return(0);
+		return (0);
 	else
 	{
 		data->envp = cpy_env(envp);

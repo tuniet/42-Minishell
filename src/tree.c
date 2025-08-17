@@ -12,7 +12,7 @@
 
 #include "../include/minishell.h"
 
-static int add_argument(t_command *cmd, t_token *arg)
+static int	add_argument(t_command *cmd, t_token *arg)
 {
 	t_token	**new_argv;
 	size_t	new_capacity;
@@ -60,7 +60,8 @@ static int	add_redirection(t_command *cmd, t_node_type type, char *filename)
 	return (1);
 }
 
-static int	process_tokens(t_command *cmd, t_token *tokens[], int start, int end)
+static int	process_tokens(t_command *cmd, t_token *tokens[], int start,
+		int end)
 {
 	int	i;
 
@@ -106,34 +107,9 @@ t_treenode	*parse_simple_command(t_token *tokens[], int start, int end)
 	return (node);
 }
 
-
-static t_treenode *build_binary_node(t_token *tokens[], int start, int end, int op_index)
-{
-	t_treenode	*node;
-	t_treenode	*left;
-	t_treenode	*right;
-
-	node = new_node(tokens[op_index]->type);
-	if (!node)
-		return (NULL);
-	left = build_tree(tokens, start, op_index - 1);
-	if (!left)
-		return (free(node), NULL);
-	right = build_tree(tokens, op_index + 1, end);
-	if (!right)
-	{
-		free_tree(left);
-		free(node);
-		return (NULL);
-	}
-	node->left = left;
-	node->right = right;
-	return (node);
-}
-
 t_treenode	*build_tree(t_token *tokens[], int start, int end)
 {
-	int			i;
+	int	i;
 
 	if (start > end)
 		return (NULL);
@@ -153,4 +129,3 @@ t_treenode	*build_tree(t_token *tokens[], int start, int end)
 	}
 	return (parse_simple_command(tokens, start, end));
 }
-

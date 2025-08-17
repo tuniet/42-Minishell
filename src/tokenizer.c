@@ -55,50 +55,45 @@ t_token	*new_token(t_node_type type, char *content)
 char	*get_token(char *c, t_token **token)
 {
 	char	*end;
-	char	*cpToken;
+	char	*cp_token;
 
 	while (*c == ' ' || *c == '\t')
 		c++;
 	if (*c == '\0')
 		return (NULL);
 	end = get_token_end(c);
-	cpToken = (char *)malloc(end - c + 1);
-	if (!cpToken)
+	cp_token = (char *)malloc(end - c + 1);
+	if (!cp_token)
 		return (NULL);
-	ft_strlcpy(cpToken, c, (end - c) + 1);
-	*token = new_token(get_token_type(cpToken), cpToken);
+	ft_strlcpy(cp_token, c, (end - c) + 1);
+	*token = new_token(get_token_type(cp_token), cp_token);
 	if (!(*token))
 	{
-		free(cpToken);
+		free(cp_token);
 		return (NULL);
 	}
-	free(cpToken);
+	free(cp_token);
 	return (end);
 }
 
 int	tokenize(char *line, t_token **tokens)
 {
-	int			iCount;
-	t_token		*tToken;
-	char		*pcAux;
+	int			i_count;
+	t_token		*token;
+	char		*pc_aux;
 
-	iCount = 0;
-	pcAux = line;
-	while (*pcAux && iCount < MAX_TOKENS)
+	i_count = 0;
+	pc_aux = line;
+	while (*pc_aux && i_count < MAX_TOKENS)
 	{
-		tToken = NULL;
-		pcAux = get_token(pcAux, &tToken);
-		if (!pcAux)
+		token = NULL;
+		pc_aux = get_token(pc_aux, &token);
+		if (!pc_aux)
 			return (-1);
-		tokens[iCount++] = tToken;
-		while (*pcAux == ' ' || *pcAux == '\t')
-			pcAux++;
+		tokens[i_count++] = token;
+		while (*pc_aux == ' ' || *pc_aux == '\t')
+			pc_aux++;
 	}
 	tokens[MAX_TOKENS] = NULL;
-	return (iCount);
+	return (i_count);
 }
-
-//TODO : TEST IT
-// < infile ls -l | wc -l | grep al > outfile
-// > out cat < Makefile
-
