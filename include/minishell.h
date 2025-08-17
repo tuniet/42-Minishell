@@ -46,6 +46,13 @@ typedef enum e_node_type
 	TOKEN_AMPERSANT = 11,
 }						t_node_type;
 
+typedef struct s_expand_ctx
+{
+	char	**envp;
+	int		status;
+	int		had_q;
+}	t_expand_ctx;
+
 typedef struct s_token
 {
 	t_node_type			type;
@@ -161,6 +168,7 @@ char					*strjoin_free(char *s1, char *s2);
 char					*expand_token_(char *tok, char **envp, int i_exit);
 char					*expand_variable(const char *s, int *i, char **envp,
 							int st);
+char					*expand_dispatch(char *tok, int *i, t_expand_ctx *ctx);
 
 // argv_funcs.c
 void					free_argv(char **argv);

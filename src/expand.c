@@ -63,26 +63,23 @@ char	*expand_other(const char *s, int *i, char **envp, int st)
 
 static char	**expand_token(char *tok, char **envp, int st)
 {
-	char	*res;
-	int		i;
-	int		had_q;
-	char	*part;
-	char	**ret;
+	char			*res;
+	int				i;
+	char			*part;
+	char			**ret;
+	t_expand_ctx	ctx;
 
 	i = 0;
-	had_q = 0;
+	ctx.envp = envp;
+	ctx.status = st;
+	ctx.had_q = 0;
 	res = strdup("");
 	while (tok[i])
 	{
-		if (tok[i] == '\'')
-			part = expand_single_quote(tok, &i), had_q = 1;
-		else if (tok[i] == '"')
-			part = expand_double_quote(tok, &i, envp, st), had_q = 1;
-		else
-			part = expand_other(tok, &i, envp, st);
+		part = expand_dispatch(tok, &i, &ctx);
 		res = strjoin_free(res, part);
 	}
-	if (!had_q && strchr(res, '*'))
+	if (!ctx.had_q && strchr(res, '*'))
 		return (expand_wildcards(res));
 	ret = ft_split(res, ' ');
 	free(res);

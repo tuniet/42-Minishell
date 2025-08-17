@@ -30,7 +30,7 @@ int	compute_line(char *line, t_data *data)
 	if (count <= 0)
 		return (0);
 	data->tokens_size = count;
-	printf("tokens_size = [%d]\n", data->tokens_size);
+	//printf("tokens_size = [%d]\n", data->tokens_size);
 	//print_tokens(data->tokens, data->tokens_size);
 	data->ast_root = build_tree(data->tokens, 0, count - 1);
 	if (!data->ast_root)

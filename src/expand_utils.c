@@ -21,7 +21,7 @@ char	*strjoin_free(char *s1, char *s2)
 	if (!s1 && !s2)
 		return (NULL);
 	if (!s1)
-		return (s2 ? strdup(s2) : NULL);
+		return (strdup(s2));
 	if (!s2)
 		return (s1);
 	len1 = strlen(s1);
@@ -85,4 +85,19 @@ char	*expand_variable(const char *s, int *i, char **envp, int st)
 	if (!value)
 		return (strdup(""));
 	return (strdup(value));
+}
+
+char	*expand_dispatch(char *tok, int *i, t_expand_ctx *ctx)
+{
+	if (tok[*i] == '\'')
+	{
+		ctx->had_q = 1;
+		return (expand_single_quote(tok, i));
+	}
+	if (tok[*i] == '"')
+	{
+		ctx->had_q = 1;
+		return (expand_double_quote(tok, i, ctx->envp, ctx->status));
+	}
+	return (expand_other(tok, i, ctx->envp, ctx->status));
 }
