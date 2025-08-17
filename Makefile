@@ -9,7 +9,10 @@ SRCS		=		$(addprefix $(SRC_DIR)/, \
 					main.c signals.c aux.c \
 					execute.c execute_utils.c \
 					tree.c tree_utils.c free_tree.c \
-					free.c mem.c )
+					free.c mem.c \
+					expand.c expand_utils.c \
+					ft_split.c \
+					builtins.c )
 
 OBJ_DIR		=		./obj
 OBJS		=		$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
@@ -17,7 +20,8 @@ OBJS		=		$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 CFLAGS		=		-Wall -Wextra -Werror
 #CFLAGS		=		-g -O0 -Werror
 CFLAGS		=		-g -fsanitize=address -Werror
-LDFLAGS		=		-lreadline #-lhistory
+#LDFLAGS		=		-lreadline #-lhistory
+LDFLAGS		=	-L/opt/homebrew/opt/readline/lib -lreadline -lhistory
 CC			=		cc
 
 all:	${NAME}
@@ -28,7 +32,7 @@ $(NAME): $(OBJS)
 
 $(OBJ_DIR)/%.o:	$(SRC_DIR)/%.c $(HEADER_FILE)
 	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) -c $< -o $@ -I $(INC_DIR)
+	@$(CC) $(CFLAGS) -c $< -o $@ -I $(INC_DIR) -I /opt/homebrew/opt/readline/include/
 
 clean:
 	@rm -f $(OBJS)

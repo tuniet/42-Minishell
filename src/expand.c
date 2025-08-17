@@ -1,44 +1,209 @@
 #include "../include/minishell.h"
+#include <dirent.h>
+#include <fnmatch.h>
 
-char	*expand_token(t_token *token, char **envp)
+char	*strjoin_free(char *s1, char *s2)
 {
-	char	*arg;
-	int		i;
-	char	*start;
-	char	*end;
+	char	*res;
+	size_t	len1;
+	size_t	len2;
 
-	if (tokens[i]->type == TOKEN_QUOTED || tokens[i]->type == TOKEN_VARIABLE)
-	{
-		start = *(token->content);
-
-		return (arg);
-	}
-	return (strdup(token->content));
+	if (!s1 && !s2)
+		return (NULL);
+	if (!s1)
+		return (s2 ? strdup(s2) : NULL);
+	if (!s2)
+		return (s1);
+	len1 = strlen(s1);
+	len2 = strlen(s2);
+	res = malloc(len1 + len2 + 1);
+	if (!res)
+		return (free(s1), free(s2), NULL);
+	memcpy(res, s1, len1);
+	memcpy(res + len1, s2, len2);
+	res[len1 + len2] = '\0';
+	free(s1);
+	free(s2);
+	return (res);
 }
 
-char	**expand(t_token **tokens, int argc, char **envp)
+static char	*expand_variable(const char *s, int *i, char **envp, int st)
 {
-	char	**argv;
+	int		start;
+	char	*name;
+	char	*value;
+	char	buf[12];
+
+	(*i)++;
+	if (s[*i] == '?')
+	{
+		(*i)++;
+		snprintf(buf, sizeof(buf), "%d", st);
+		return (strdup(buf));
+	}
+	start = *i;
+	while (s[*i] && (isalnum(s[*i]) || s[*i] == '_'))
+		(*i)++;
+	name = strndup(s + start, *i - start);
+	value = mini_getenv(name, envp);
+	free(name);
+	if (!value)
+		return (strdup(""));
+	return (strdup(value));
+}
+
+static char	*expand_single_quote(const char *s, int *i)
+{
+	int		start;
+	char	*part;
+
+	(*i)++;
+	start = *i;
+	while (s[*i] && s[*i] != '\'')
+		(*i)++;
+	part = strndup(s + start, *i - start);
+	if (s[*i] == '\'')
+		(*i)++;
+	return (part);
+}
+
+static char	*expand_double_quote(const char *s, int *i, char **envp, int st)
+{
+	char	*res;
+	char	tmp[2];
+
+	(*i)++;
+	res = strdup("");
+	while (s[*i] && s[*i] != '"')
+	{
+		if (s[*i] == '$')
+			res = strjoin_free(res, expand_variable(s, i, envp, st));
+		else
+		{
+			tmp[0] = s[(*i)++];
+			tmp[1] = '\0';
+			res = strjoin_free(res, strdup(tmp));
+		}
+	}
+	if (s[*i] == '"')
+		(*i)++;
+	return (res);
+}
+
+static char	*expand_other(const char *s, int *i, char **envp, int st)
+{
+	char	tmp[2];
+
+	if (s[*i] == '$')
+		return (expand_variable(s, i, envp, st));
+	tmp[0] = s[(*i)++];
+	tmp[1] = '\0';
+	return (strdup(tmp));
+}
+
+static char	**expand_wildcards(const char *pattern)
+{
+	DIR				*dir;
+	struct dirent	*ent;
+	char			**matches;
+	int				count;
+
+	dir = opendir(".");
+	if (!dir)
+		return (ft_split(pattern, ' '));
+	matches = NULL;
+	count = 0;
+	while ((ent = readdir(dir)))
+	{
+		if (fnmatch(pattern, ent->d_name, 0) == 0)
+		{
+			matches = realloc(matches, sizeof(char *) * (count + 2));
+			matches[count++] = strdup(ent->d_name);
+			matches[count] = NULL;
+		}
+	}
+	closedir(dir);
+	if (count == 0)
+		return (ft_split(pattern, ' '));
+	return (matches);
+}
+
+static char	**expand_token(char *tok, char **envp, int st)
+{
+	char	*res;
+	int		i;
+	int		had_q;
+	char	*part;
+
+	i = 0;
+	had_q = 0;
+	res = strdup("");
+	while (tok[i])
+	{
+		if (tok[i] == '\'')
+			part = expand_single_quote(tok, &i), had_q = 1;
+		else if (tok[i] == '"')
+			part = expand_double_quote(tok, &i, envp, st), had_q = 1;
+		else
+			part = expand_other(tok, &i, envp, st);
+		res = strjoin_free(res, part);
+	}
+	if (!had_q && strchr(res, '*'))
+		return (expand_wildcards(res));
+	return (ft_split(res, ' '));
+}
+
+static char	**argv_join(char **argv, char **exp)
+{
+	int		size1;
+	int		size2;
 	int		i;
 	int		j;
-	
-	argv = malloc(sizeof(char *) * (argc + 1));
-	if (!argv)
+	char	**res;
+
+	size1 = argv_len(argv);
+	size2 = argv_len(exp);
+	res = malloc(sizeof(char *) * (size1 + size2 + 1));
+	if (!res)
 		return (NULL);
+
 	i = 0;
-	j = 0;
-	while (tokens[i])
+	while (argv && argv[i])
 	{
-		argv[i] = expand_token(tokens[i], envp);
-		if (!argv[i])
-		{
-			while (j < i)
-				free(argv[j++]);
-			free(argv);
-			return (NULL);
-		}
+		res[i] = strdup(argv[i]);
+		if (!res[i])
+			return (free_argv(res), NULL);
 		i++;
 	}
-	argv[i] = NULL;
+	j = 0;
+	while (exp && exp[j])
+	{
+		res[i] = strdup(exp[j]);
+		if (!res[i])
+			return (free_argv(res), NULL);
+		i++;
+		j++;
+	}
+	res[i] = NULL;
+	free(argv);
+	free(exp);
+	return (res);
+}
+
+
+char	**expand(t_token **tokens, char **envp, int iExit)
+{
+	char	**argv;
+	char	**exp;
+	int		i;
+
+	argv = NULL;
+	i = 0;
+	while (tokens[i])
+	{
+		exp = expand_token(tokens[i]->content, envp, iExit);
+		argv = argv_join(argv, exp);
+		i++;
+	}
 	return (argv);
 }

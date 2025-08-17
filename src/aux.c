@@ -47,4 +47,3 @@ char	*get_token_end(char *line)
 	}
 	return (line);
 }
-

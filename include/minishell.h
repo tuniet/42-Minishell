@@ -34,7 +34,6 @@ typedef enum e_node_type
 	TOKEN_ENV_VAR = 9,//TODO : implement at executing time
 	TOKEN_COMMAND = 10,//TODO : implement at executing time
 	TOKEN_AMPERSANT = 11,//TODO : implement at executing time
-	TOKEN_QUOTED = 12//TODO : implement at executing time
 }	t_node_type;
 
 // STRUCTS 
@@ -52,7 +51,6 @@ typedef struct s_redirect {
 }	t_redirect;
 
 typedef struct s_command {
-	//char		**argv;
 	t_token		**argv;
 	int			argc;
 	int			capacity;
@@ -99,10 +97,6 @@ void		print_tree(t_treenode *node, int level);
 int			is_redirection(t_node_type type);
 t_treenode	*new_node(t_node_type type);
 
-// Aux functions
-int			is_metachar(int c);
-char		*get_token_end(char *line);
-
 // String functions
 char	*ft_strcpy(char *dest, char *src);
 char	*ft_strcat(char *dest, char *src);
@@ -111,15 +105,13 @@ size_t	ft_strlen(const char *s);
 int ft_strncmp(const char *s1, const char *s2, size_t n);
 void *ft_memcpy(void *dest, const void *src, size_t n);
 
-// Signal functions
-void setup_signals(void);
-
-// Execute tree
-int		execute_tree(t_treenode *node, char **envp);
-// Execute Utils
+// execute.c
+int		execute_tree(t_treenode *node, char **envp, t_data *data);
+//int		execute_tree(t_treenode *node, char **envp);
+// execute_utils.c
 char	*find_executable(char *command, char **envp);
 
-// mem.c 
+// mem.c
 void	mini_free(void **ptr);
 
 // free_tree.c
@@ -130,5 +122,27 @@ void free_command(t_command *cmd);
 void	free_tokens(t_token **tokens);
 void	free_tree(t_treenode *node);
 void	free_all(t_data *data, int flag);
+
+// expand.c
+char	**expand(t_token **tokens, char **envp, int iExit);
+
+// Aux functions
+int			is_metachar(int c);
+char		*get_token_end(char *line);
+
+int			argv_len(char **argv);
+void		free_argv(char **argv);
+
+// ft_split.c
+char		**ft_split(const char *s, char c);
+
+//
+int		is_builtin(const char *cmd);
+int		execute_builtin(char **argv, t_data *data);
+
+//signals.c
+void	handle_sigint(int sig);
+void	handle_sigquit(int sig);
+void setup_signals(void);
 
 #endif
