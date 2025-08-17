@@ -12,17 +12,7 @@
 
 #include "../include/minishell.h"
 
-/*
-void **ft_realloc (void **p)
-{
-	void *p;
-
-
-	return (p);
-}
-*/
-
-int is_metachar(int c)
+int	is_metachar(int c)
 {
 	if (c == '\0' || c == '\t' || c == ' '
 		|| c == '&' || c == '|'
@@ -31,7 +21,6 @@ int is_metachar(int c)
 	return (0);
 }
 
-//TODO: Change the name of variable "char *line"
 char	*get_token_end(char *line)
 {
 	char	quote;

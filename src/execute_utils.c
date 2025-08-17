@@ -12,7 +12,7 @@
 
 #include "../include/minishell.h"
 
-static char *join_path(const char *dir, const char *command)
+static char	*join_path(const char *dir, const char *command)
 {
 	size_t	len1;
 	size_t	len2;
@@ -23,7 +23,6 @@ static char *join_path(const char *dir, const char *command)
 	full = malloc(len1 + len2 + 2);
 	if (!full)
 		return (NULL);
-
 	strcpy(full, dir);
 	full[len1] = '/';
 	strcpy(full + len1 + 1, command);
@@ -76,7 +75,3 @@ char	*find_executable(char *command, char **envp)
 		return (NULL);
 	return (search_in_path(paths, command));
 }
-
-
-
-

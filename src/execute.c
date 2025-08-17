@@ -12,32 +12,40 @@
 
 #include "../include/minishell.h"
 
+static int	open_redir(t_redirect *redir, t_data *data)
+{
+	int		fd;
+	char	*filename;
+
+	filename = expand_token_(redir->filename, data->envp, data->iExit);
+	if (!filename)
+		return (-1);
+	if (redir->type == TOKEN_REDIRECT_IN)
+		fd = open(filename, O_RDONLY);
+	else if (redir->type == TOKEN_REDIRECT_OUT)
+		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	else if (redir->type == TOKEN_APPEND)
+		fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	else
+		fd = heredoc(filename, data);
+	free(filename);
+	return (fd);
+}
+
 int	apply_redirections(t_redirect *redir_list, t_data *data)
 {
 	t_redirect	*redir;
 	int			fd;
-	char		*filename;
 
 	redir = redir_list;
 	while (redir)
 	{
-		filename = expand_token_(redir->filename, data->envp, data->iExit);
-		if (!filename)
-			return (-1);
-		if (redir->type == TOKEN_REDIRECT_IN)
-			fd = open(filename, O_RDONLY);
-		else if (redir->type == TOKEN_REDIRECT_OUT)
-			fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		else if (redir->type == TOKEN_APPEND)
-			fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		else if (redir->type == TOKEN_HEREDOC)
-			fd = heredoc(filename, data);
-		free(filename);
+		fd = open_redir(redir, data);
 		if (fd < 0)
 			return (-1);
 		if (redir->type == TOKEN_REDIRECT_IN || redir->type == TOKEN_HEREDOC)
 			dup2(fd, STDIN_FILENO);
-		else if (redir->type == TOKEN_REDIRECT_OUT)
+		else
 			dup2(fd, STDOUT_FILENO);
 		close(fd);
 		redir = redir->next;
@@ -99,73 +107,4 @@ int	execute_command_node(t_treenode *node, char **envp, t_data *data)
 		run_child_process(node, argv, envp, data);
 	free_argv(argv);
 	return (handle_child_status(pid, data));
-}
-
-
-int	execute_pipe_node(t_treenode *node, char **envp, t_data *data)
-{
-	int		pipefd[2];
-	pid_t	left_pid;
-	pid_t	right_pid;
-	int		status_left;
-	int		status_right;
-
-	pipe(pipefd);
-	left_pid = fork();
-	if (left_pid == 0)
-	{
-		dup2(pipefd[1], STDOUT_FILENO);
-		close(pipefd[0]);
-		close(pipefd[1]);
-		exit(execute_tree(node->left, envp, data));
-	}
-	right_pid = fork();
-	if (right_pid == 0)
-	{
-		dup2(pipefd[0], STDIN_FILENO);
-		close(pipefd[0]);
-		close(pipefd[1]);
-		exit(execute_tree(node->right, envp, data));
-	}
-	close(pipefd[0]);
-	close(pipefd[1]);
-	waitpid(left_pid, &status_left, 0);
-	waitpid(right_pid, &status_right, 0);
-	data->iExit = WEXITSTATUS(status_right);
-	return (data->iExit);
-}
-
-int	execute_logical_node(t_treenode *node, char **envp, t_data *data)
-{
-	int	left_status;
-
-	left_status = execute_tree(node->left, envp, data);
-	if (node->type == TOKEN_AND)
-	{
-		if (left_status == 0)
-			data->iExit = execute_tree(node->right, envp, data);
-		else
-			data->iExit = left_status;
-	}
-	else if (node->type == TOKEN_OR)
-	{
-		if (left_status != 0)
-			data->iExit = execute_tree(node->right, envp, data);
-		else
-			data->iExit = left_status;
-	}
-	return (data->iExit);
-}
-
-int	execute_tree(t_treenode *node, char **envp, t_data *data)
-{
-	if (!node)
-		return (1);
-	if (node->type == TOKEN_COMMAND)
-		return execute_command_node(node, envp, data);
-	else if (node->type == TOKEN_PIPE)
-		return execute_pipe_node(node, envp, data);
-	else if (node->type == TOKEN_AND || node->type == TOKEN_OR)
-		return execute_logical_node(node, envp, data);
-	return (0);
 }
