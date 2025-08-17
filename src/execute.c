@@ -12,27 +12,32 @@
 
 #include "../include/minishell.h"
 
-int	apply_redirections(t_redirect *redir_list)
+int	apply_redirections(t_redirect *redir_list, t_data *data)
 {
 	t_redirect	*redir;
 	int			fd;
+	char		*filename;
 
 	redir = redir_list;
 	while (redir)
 	{
-		if (redir->type == TOKEN_REDIRECT_IN)
-			fd = open(redir->filename, O_RDONLY);
-		else if (redir->type == TOKEN_REDIRECT_OUT)
-			fd = open(redir->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		else if (redir->type == TOKEN_APPEND)
-			fd = open(redir->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		else
-			return (-1); // TODO: ADD HEREDOC
-		if (fd < 0)
+		filename = expand_token_(redir->filename, data->envp, data->iExit);
+		if (!filename)
 			return (-1);
 		if (redir->type == TOKEN_REDIRECT_IN)
+			fd = open(filename, O_RDONLY);
+		else if (redir->type == TOKEN_REDIRECT_OUT)
+			fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		else if (redir->type == TOKEN_APPEND)
+			fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		else if (redir->type == TOKEN_HEREDOC)
+			fd = heredoc(filename, data);
+		free(filename);
+		if (fd < 0)
+			return (-1);
+		if (redir->type == TOKEN_REDIRECT_IN || redir->type == TOKEN_HEREDOC)
 			dup2(fd, STDIN_FILENO);
-		else
+		else if (redir->type == TOKEN_REDIRECT_OUT)
 			dup2(fd, STDOUT_FILENO);
 		close(fd);
 		redir = redir->next;
@@ -41,13 +46,13 @@ int	apply_redirections(t_redirect *redir_list)
 }
 
 static void	run_child_process(t_treenode *node,
-				char **argv, char **envp)
+				char **argv, char **envp, t_data *data)
 {
 	char	*path;
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	if (apply_redirections(node->cmd->redirects) != 0)
+	if (apply_redirections(node->cmd->redirects, data) != 0)
 	{
 		perror("Redirection error");
 		exit(1);
@@ -55,9 +60,6 @@ static void	run_child_process(t_treenode *node,
 	if (!argv)
 		exit(1);
 	path = find_executable(argv[0], envp);
-	/* Debug:
-	fprintf(stderr, "CMD Path : %s\n\n", path);
-	*/
 	if (!path)
 	{
 		fprintf(stderr, "%s: command not found\n", argv[0]);
@@ -88,19 +90,14 @@ int	execute_command_node(t_treenode *node, char **envp, t_data *data)
 {
 	pid_t	pid;
 	char	**argv;
-	int		i;
 
 	argv = expand(node->cmd->argv, envp, data->iExit);
-	/* Debug:
-	printf("\nAFTER EXPANSION : \n");
-	for (i = 0; argv[i]; i++)
-		printf("Expanded [%d] : %s\n", i + 1, argv[i]);
-	*/
 	if (is_builtin(argv[0]))
 		return (execute_builtin(argv, data));
 	pid = fork();
 	if (pid == 0)
-		run_child_process(node, argv, envp);
+		run_child_process(node, argv, envp, data);
+	free_argv(argv);
 	return (handle_child_status(pid, data));
 }
 

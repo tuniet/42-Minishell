@@ -139,6 +139,8 @@ void	free_all(t_data *data, int flag);
 
 // expand.c
 char	**expand(t_token **tokens, char **envp, int iExit);
+char	*expand_token_(char *tok, char **envp, int iExit);
+char	*strjoin_free(char *s1, char *s2);
 
 // Aux functions
 int			is_metachar(int c);
@@ -150,7 +152,7 @@ void		free_argv(char **argv);
 // ft_split.c
 char		**ft_split(const char *s, char c);
 
-//
+// builtins.c
 int		is_builtin(const char *cmd);
 int		execute_builtin(char **argv, t_data *data);
 int		mini_echo(char **argv);
@@ -161,9 +163,11 @@ int		mini_exit(char **argv);
 int		mini_export(char **argv, t_data *data);
 int		mini_unset(char **argv, t_data *data);
 
-//signals.c
+// signals.c
 void	handle_sigint(int sig);
 void	handle_sigquit(int sig);
 void setup_signals(void);
+// heredoc.c
+int	heredoc(char *delimiter, t_data *data);
 
 #endif

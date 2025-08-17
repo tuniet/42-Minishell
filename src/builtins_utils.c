@@ -46,6 +46,7 @@ int mini_exit(char **argv)
     if (argv[1])
         status = atoi(argv[1]);
     printf("exit\n");
+    free_argv(argv);
     exit(status);
 }
 
@@ -67,22 +68,25 @@ int is_builtin(const char *cmd)
 
 int execute_builtin(char **argv, t_data *data)
 {
+    int ret;
     if (!argv || !argv[0])
-        return 1;
+        ret = 1;
     if (ft_strcmp(argv[0], "echo") == 0)
-        return mini_echo(argv);
+        ret = mini_echo(argv);
     if (ft_strcmp(argv[0], "cd") == 0)
-        return mini_cd(argv, data);
+        ret = mini_cd(argv, data);
     if (ft_strcmp(argv[0], "pwd") == 0)
-        return mini_pwd();
+        ret = mini_pwd();
     if (ft_strcmp(argv[0], "env") == 0)
-        return mini_env(data, argv);
+        ret = mini_env(data, argv);
     if (ft_strcmp(argv[0], "exit") == 0)
         mini_exit(argv);
     if (ft_strcmp(argv[0], "export") == 0)
-        return mini_export(argv, data);
+        ret = mini_export(argv, data);
     if (ft_strcmp(argv[0], "unset") == 0)
-        return mini_unset(argv, data);
+        ret = mini_unset(argv, data);
     // Add more builtins here if needed
-    return 1;
+    free_argv(argv);
+    
+    return (ret);
 }

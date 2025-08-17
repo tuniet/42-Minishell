@@ -12,16 +12,16 @@ SRCS		=		$(addprefix $(SRC_DIR)/, \
 					free.c mem.c \
 					expand.c expand_utils.c \
 					ft_split.c \
-					builtins.c builtins_utils.c unset_export.c )
+					builtins.c builtins_utils.c unset_export.c \
+					heredoc.c )
 
 OBJ_DIR		=		./obj
 OBJS		=		$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-CFLAGS		=		-Wall -Wextra -Werror
+#CFLAGS		=		-Wall -Wextra -Werror
 #CFLAGS		=		-g -O0 -Werror
-CFLAGS		=		-g -fsanitize=address -Werror
-#LDFLAGS		=		-lreadline #-lhistory
-LDFLAGS		=	-L/opt/homebrew/opt/readline/lib -lreadline -lhistory
+CFLAGS		=		-g -fsanitize=address -Wall -Wextra -Werror
+LDFLAGS		=		-lreadline -lhistory
 CC			=		cc
 
 all:	${NAME}

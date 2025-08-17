@@ -146,6 +146,7 @@ static char	**expand_token(char *tok, char **envp, int st)
 	int		i;
 	int		had_q;
 	char	*part;
+	char	**ret;
 
 	i = 0;
 	had_q = 0;
@@ -162,7 +163,9 @@ static char	**expand_token(char *tok, char **envp, int st)
 	}
 	if (!had_q && strchr(res, '*'))
 		return (expand_wildcards(res));
-	return (ft_split(res, ' '));
+	ret = ft_split(res, ' ');
+	free(res);
+	return (ret);
 }
 
 static char	**copy_argv(char **src, int *index, char **res)
@@ -206,12 +209,35 @@ static char	**argv_join(char **argv, char **exp)
 		return (NULL);
 
 	res[i] = NULL;
-	free(argv);
-	free(exp);
+	free_argv(argv);
+	free_argv(exp);
 	return (res);
 }
 
+char	*expand_token_(char *tok, char **envp, int iExit)
+{
+    char	*res;
+    char	*part;
+    int		i;
 
+    i = 0;
+    res = strdup("");
+    if (!res)
+        return (NULL);
+    while (tok[i])
+    {
+        if (tok[i] == '\'')
+            part = expand_single_quote(tok, &i);
+        else if (tok[i] == '"')
+            part = expand_double_quote(tok, &i, envp, iExit);
+        else
+            part = expand_other(tok, &i, envp, iExit);
+        if (!part)
+            return (free(res), NULL);
+        res = strjoin_free(res, part);
+    }
+    return (res);
+}
 
 char	**expand(t_token **tokens, char **envp, int iExit)
 {
@@ -225,6 +251,10 @@ char	**expand(t_token **tokens, char **envp, int iExit)
 	{
 		exp = expand_token(tokens[i]->content, envp, iExit);
 		argv = argv_join(argv, exp);
+		if(!argv)
+		{
+			free_argv(exp);
+		}
 		i++;
 	}
 	return (argv);
