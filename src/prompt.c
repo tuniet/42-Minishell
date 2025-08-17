@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   prompt.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/17 18:18:11 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/17 18:18:12 by antoniof         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 char	*mini_getenv(char *var, char *envp[])
@@ -86,17 +98,16 @@ static void	make_pwd(t_data *data, char *prompt)
 
 static int	print_prompt(char *prompt, char *user, char *host, t_data *data)
 {
-	prompt = ft_strcpy(prompt, BRIGHT_GREEN);
-	printf("%s", prompt);
-	ft_strcpy(prompt, user);
-	ft_strcat(prompt, "@");
-	ft_strcat(prompt, host);
-	ft_strcat(prompt, RESET_COLOR);
-	ft_strcat(prompt, ":"
-		BRIGHT_BLUE);
-	make_pwd(data, prompt);
-	ft_strcat(prompt, RESET_COLOR "$ ");
-	return (1);
+    ft_strcpy(prompt, BRIGHT_GREEN);
+    ft_strcat(prompt, user);
+    ft_strcat(prompt, "@");
+    ft_strcat(prompt, host);
+    ft_strcat(prompt, RESET_COLOR);
+    ft_strcat(prompt, ":"
+        BRIGHT_BLUE);
+    make_pwd(data, prompt);
+    ft_strcat(prompt, RESET_COLOR "$ ");
+    return (1);
 }
 
 int	get_prompt(char **p, t_data *data)

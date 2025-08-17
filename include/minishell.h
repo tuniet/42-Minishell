@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/17 18:14:21 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/17 18:14:23 by antoniof         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 #define MINISHELL_H
 
@@ -12,11 +24,11 @@
 # include <stdlib.h>
 # include <string.h>
 #include <term.h>
+#include <signal.h>
+#include <sys/wait.h>
 
 //DEFINES
 #define MAX_TOKENS 100
-// FUNCTIONS DEFS
-typedef int (*is_delimiter_t)(int c);
 
 // ENUM
 typedef enum e_node_type
@@ -105,6 +117,7 @@ size_t	ft_strlen(const char *s);
 int ft_strncmp(const char *s1, const char *s2, size_t n);
 void *ft_memcpy(void *dest, const void *src, size_t n);
 int ft_strcmp(const char *s1, const char *s2);
+size_t	ft_strlcpy(char *dst, const char *src, size_t size);
 
 // execute.c
 int		execute_tree(t_treenode *node, char **envp, t_data *data);

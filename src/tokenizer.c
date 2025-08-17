@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenizer.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/17 18:18:47 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/17 18:18:48 by antoniof         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 void	print_tokens(t_token **tokens, int count);
@@ -53,7 +65,7 @@ char	*get_token(char *c, t_token **token)
 	cpToken = (char *)malloc(end - c + 1);
 	if (!cpToken)
 		return (NULL);
-	strlcpy(cpToken, c, (end - c) + 1);
+	ft_strlcpy(cpToken, c, (end - c) + 1);
 	*token = new_token(get_token_type(cpToken), cpToken);
 	if (!(*token))
 	{
