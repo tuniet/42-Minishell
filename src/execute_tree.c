@@ -40,8 +40,8 @@ int	execute_pipe_node(t_treenode *node, t_data *data)
 	close(pipefd[1]);
 	wait(&status_left);
 	wait(&status_right);
-	data->iExit = WEXITSTATUS(status_right);
-	return (data->iExit);
+	data->i_exit = WEXITSTATUS(status_right);
+	return (data->i_exit);
 }
 
 int	execute_tree(t_treenode *node, char **envp, t_data *data)

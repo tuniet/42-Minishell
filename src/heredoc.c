@@ -12,7 +12,7 @@
 
 #include "../include/minishell.h"
 
-static char	*expand_variable_(const char *s, int *i, char **envp, int iExit)
+static char	*expand_variable_(const char *s, int *i, char **envp, int i_exit)
 {
 	int		start;
 	char	*name;
@@ -23,7 +23,7 @@ static char	*expand_variable_(const char *s, int *i, char **envp, int iExit)
 	if (s[*i] == '?')
 	{
 		(*i)++;
-		snprintf(buf, sizeof(buf), "%d", iExit);
+		snprintf(buf, sizeof(buf), "%d", i_exit);
 		return (strdup(buf));
 	}
 	start = *i;
@@ -39,7 +39,7 @@ static char	*expand_variable_(const char *s, int *i, char **envp, int iExit)
 	return (strdup(value));
 }
 
-static char	*expand_line(char *tok, char **envp, int iExit)
+static char	*expand_line(char *tok, char **envp, int i_exit)
 {
 	char	*res;
 	char	*part;
@@ -53,7 +53,7 @@ static char	*expand_line(char *tok, char **envp, int iExit)
 	while (tok[i])
 	{
 		if (tok[i] == '$')
-			part = expand_variable_(tok, &i, envp, iExit);
+			part = expand_variable_(tok, &i, envp, i_exit);
 		else
 		{
 			start = i;
@@ -83,7 +83,7 @@ int	heredoc(char *delimiter, t_data *data)
 			free(line);
 			break ;
 		}
-		line = expand_line(line, data->envp, data->iExit);
+		line = expand_line(line, data->envp, data->i_exit);
 		if (line)
 		{
 			write(pipefd[1], line, strlen(line));

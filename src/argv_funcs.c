@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   argv_funcs.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/17 21:06:32 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/17 21:06:33 by antoniof         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 void	free_argv(char **argv)
@@ -15,7 +27,7 @@ void	free_argv(char **argv)
 int	argv_len(char **argv)
 {
 	int	i;
-	
+
 	i = 0;
 	while (argv && argv[i])
 		i++;
@@ -53,13 +65,11 @@ char	**argv_join(char **argv, char **exp)
 	res = malloc(sizeof(char *) * (size1 + size2 + 1));
 	if (!res)
 		return (NULL);
-
 	i = 0;
 	if (!copy_argv(argv, &i, res))
 		return (NULL);
 	if (!copy_argv(exp, &i, res))
 		return (NULL);
-
 	res[i] = NULL;
 	free_argv(argv);
 	free_argv(exp);

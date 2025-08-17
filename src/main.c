@@ -87,7 +87,7 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	setup_signals();
 	main_loop(&data);
-	if (data.iExit)
-		printf("data iExit val :  %d\n", data.iExit);
-	return (free_all(&data, 1), data.iExit);
+	if (data.i_exit)
+		printf("data i_exit val :  %d\n", data.i_exit);
+	return (free_all(&data, 1), data.i_exit);
 }

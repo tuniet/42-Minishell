@@ -12,13 +12,13 @@
 
 #include "../include/minishell.h"
 
-void free_tokens(t_token **tokens)
+void	free_tokens(t_token **tokens)
 {
 	int	i;
 
 	i = 0;
 	if (!tokens)
-		return;
+		return ;
 	while (tokens[i])
 	{
 		free(tokens[i]->content);
@@ -29,10 +29,10 @@ void free_tokens(t_token **tokens)
 	}
 }
 
-void free_tree(t_treenode *node)
+void	free_tree(t_treenode *node)
 {
 	if (!node)
-		return;
+		return ;
 	free_tree(node->left);
 	free_tree(node->right);
 	if (node->type == TOKEN_COMMAND)
@@ -40,7 +40,7 @@ void free_tree(t_treenode *node)
 	free(node);
 }
 
-static void free_envp(char **envp)
+static void	free_envp(char **envp)
 {
 	int	i;
 
@@ -56,7 +56,7 @@ static void free_envp(char **envp)
 	free(envp);
 }
 
-void free_all(t_data *data, int flag)
+void	free_all(t_data *data, int flag)
 {
 	if (!data)
 		return ;

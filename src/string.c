@@ -26,26 +26,27 @@ char	*ft_strcpy(char *dest, char *src)
 	return (dest);
 }
 
-char *ft_strcat(char *dest, char *src)
+char	*ft_strcat(char *dest, char *src)
 {
-    int i = 0;
-    int j = 0;
+	int	i;
+	int	j;
 
-    if (!dest)
-        return (NULL);
-    while (dest[i] != '\0')
-        i++;
-    if (src)
-    {
-        while (src[j] != '\0')
-        {
-            dest[i + j] = src[j];
-            j++;
-        }
-    }
-    dest[i + j] = '\0';
-
-    return (dest);
+	i = 0;
+	j = 0;
+	if (!dest)
+		return (NULL);
+	while (dest[i] != '\0')
+		i++;
+	if (src)
+	{
+		while (src[j] != '\0')
+		{
+			dest[i + j] = src[j];
+			j++;
+		}
+	}
+	dest[i + j] = '\0';
+	return (dest);
 }
 
 char	*ft_strdup(const char *src)
@@ -96,22 +97,27 @@ void	*ft_memcpy(void *dest, const void *src, size_t n)
 	return (dest);
 }
 
-int ft_strcmp(const char *s1, const char *s2)
+int	ft_strcmp(const char *s1, const char *s2)
 {
-    size_t i = 0;
-    while (s1[i] && s2[i] && s1[i] == s2[i])
-        i++;
-    return (unsigned char)s1[i] - (unsigned char)s2[i];
+	size_t	i;
+
+	i = 0;
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-size_t ft_strlcpy(char *dst, const char *src, size_t size) {
-    size_t i;
+size_t	ft_strlcpy(char *dst, const char *src, size_t size)
+{
+	size_t	i;
 
-    for (i = 0; i < size - 1 && src[i] != '\0'; i++) {
-        dst[i] = src[i];
-    }
-    if (size > 0) {
-        dst[i] = '\0';
-    }
-    return ft_strlen(src);
+	for (i = 0; i < size - 1 && src[i] != '\0'; i++)
+	{
+		dst[i] = src[i];
+	}
+	if (size > 0)
+	{
+		dst[i] = '\0';
+	}
+	return (ft_strlen(src));
 }

@@ -50,7 +50,7 @@ void	init_nulls(t_data *data)
 	data->envp = NULL;
 	data->tokens_size = 0;
 	data->ast_root = NULL;
-	data->iExit = 0;
+	data->i_exit = 0;
 }
 
 int	init_data(t_data *data, char *envp[])

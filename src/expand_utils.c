@@ -37,29 +37,29 @@ char	*strjoin_free(char *s1, char *s2)
 	return (res);
 }
 
-char	*expand_token_(char *tok, char **envp, int iExit)
+char	*expand_token_(char *tok, char **envp, int i_exit)
 {
-    char	*res;
-    char	*part;
-    int		i;
+	char	*res;
+	char	*part;
+	int		i;
 
-    i = 0;
-    res = strdup("");
-    if (!res)
-        return (NULL);
-    while (tok[i])
-    {
-        if (tok[i] == '\'')
-            part = expand_single_quote(tok, &i);
-        else if (tok[i] == '"')
-            part = expand_double_quote(tok, &i, envp, iExit);
-        else
-            part = expand_other(tok, &i, envp, iExit);
-        if (!part)
-            return (free(res), NULL);
-        res = strjoin_free(res, part);
-    }
-    return (res);
+	i = 0;
+	res = strdup("");
+	if (!res)
+		return (NULL);
+	while (tok[i])
+	{
+		if (tok[i] == '\'')
+			part = expand_single_quote(tok, &i);
+		else if (tok[i] == '"')
+			part = expand_double_quote(tok, &i, envp, i_exit);
+		else
+			part = expand_other(tok, &i, envp, i_exit);
+		if (!part)
+			return (free(res), NULL);
+		res = strjoin_free(res, part);
+	}
+	return (res);
 }
 
 char	*expand_variable(const char *s, int *i, char **envp, int st)

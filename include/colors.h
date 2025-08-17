@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COLORSDEF_H
-# define COLORSDEF_H
+#ifndef COLORS_H
+# define COLORS_H
 
 // Texto en colores
 # define RED "\001\033[31m\002"

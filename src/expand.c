@@ -101,7 +101,7 @@ char	**expand(t_token **tokens, char **envp, int iExit)
 	{
 		exp = expand_token(tokens[i]->content, envp, iExit);
 		argv = argv_join(argv, exp);
-		if(!argv)
+		if (!argv)
 			free_argv(exp);
 		i++;
 	}

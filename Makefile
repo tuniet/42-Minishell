@@ -9,13 +9,12 @@ SRCS		=		$(addprefix $(SRC_DIR)/, \
 					init.c prompt.c string.c \
 					tokenizer.c tokenizer_utils.c \
 					expand.c expand_wildcard.c expand_utils.c argv_funcs.c \
-					execute.c execute_utils.c \
+					execute.c execute_utils.c execute_tree.c\
 					tree.c tree_utils.c free_tree.c \
 					free.c mem.c \
 					ft_split.c \
-					builtins.c builtins_utils.c unset_export.c \
-					signals.c \
-					heredoc.c  )
+					builtins.c builtins_utils.c unset_export.c export.c\
+					heredoc.c signals.c prompt_utils.c )
 
 OBJ_DIR		=		./obj
 OBJS		=		$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

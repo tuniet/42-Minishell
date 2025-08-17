@@ -17,7 +17,7 @@ static int	open_redir(t_redirect *redir, t_data *data)
 	int		fd;
 	char	*filename;
 
-	filename = expand_token_(redir->filename, data->envp, data->iExit);
+	filename = expand_token_(redir->filename, data->envp, data->i_exit);
 	if (!filename)
 		return (-1);
 	if (redir->type == TOKEN_REDIRECT_IN)
@@ -85,13 +85,13 @@ static int	handle_child_status(pid_t pid, t_data *data)
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	waitpid(pid, &status, 0);
-	data->iExit = WEXITSTATUS(status);
+	data->i_exit = WEXITSTATUS(status);
 	signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, handle_sigquit);
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
 		write(1, "\n", 1);
-	data->iExit = WEXITSTATUS(status);
-	return (data->iExit);
+	data->i_exit = WEXITSTATUS(status);
+	return (data->i_exit);
 }
 
 int	execute_command_node(t_treenode *node, char **envp, t_data *data)
@@ -99,7 +99,7 @@ int	execute_command_node(t_treenode *node, char **envp, t_data *data)
 	pid_t	pid;
 	char	**argv;
 
-	argv = expand(node->cmd->argv, envp, data->iExit);
+	argv = expand(node->cmd->argv, envp, data->i_exit);
 	if (is_builtin(argv[0]))
 		return (execute_builtin(argv, data));
 	pid = fork();

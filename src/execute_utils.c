@@ -75,3 +75,25 @@ char	*find_executable(char *command, char **envp)
 		return (NULL);
 	return (search_in_path(paths, command));
 }
+
+int	execute_logical_node(t_treenode *node, char **envp, t_data *data)
+{
+	int	left_status;
+
+	left_status = execute_tree(node->left, envp, data);
+	if (node->type == TOKEN_AND)
+	{
+		if (left_status == 0)
+			data->i_exit = execute_tree(node->right, envp, data);
+		else
+			data->i_exit = left_status;
+	}
+	else if (node->type == TOKEN_OR)
+	{
+		if (left_status != 0)
+			data->i_exit = execute_tree(node->right, envp, data);
+		else
+			data->i_exit = left_status;
+	}
+	return (data->i_exit);
+}

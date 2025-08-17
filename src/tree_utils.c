@@ -107,7 +107,7 @@ t_treenode	*new_node(t_node_type type)
 
 	node = malloc(sizeof(t_treenode));
 	if (!node)
-		return (NULL); // TODO: handle error properly
+		return (NULL);
 	node->type = type;
 	node->left = NULL;
 	node->right = NULL;

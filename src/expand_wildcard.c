@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_wildcard.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/17 21:05:08 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/17 21:05:10 by antoniof         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 #include <dirent.h>
 #include <fnmatch.h>
@@ -28,5 +40,3 @@ char	**expand_wildcards(const char *pattern)
 		return (ft_split(pattern, ' '));
 	return (matches);
 }
-
-

@@ -39,6 +39,8 @@ int	mini_cd(char **argv, t_data *data)
 		perror("cd");
 		return (1);
 	}
+	free(data->pwd);
+	data->pwd = NULL;
 	data->pwd = getcwd(NULL, 0);
 	return (0);
 }
