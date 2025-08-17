@@ -2,17 +2,16 @@ NAME		=		minishell
 
 INC_DIR		=		./include
 HEADER_FILE	=		$(INC_DIR)/minishell.h
-
+LIBFT		=		libft
 SRC_DIR		=		./src
 SRCS		=		$(addprefix $(SRC_DIR)/, \
 					main.c \
-					init.c prompt.c string.c \
+					init.c prompt.c \
 					tokenizer.c tokenizer_utils.c \
 					expand.c expand_wildcard.c expand_utils.c argv_funcs.c \
 					execute.c execute_utils.c execute_tree.c\
 					tree.c tree_utils.c free_tree.c \
 					free.c mem.c \
-					ft_split.c \
 					builtins.c builtins_utils.c unset_export.c export.c\
 					heredoc.c signals.c prompt_utils.c )
 
@@ -28,9 +27,10 @@ CC			=		cc
 
 all:	${NAME}
 
-$(NAME): $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LDFLAGS) && \
-	(printf "[minishell] Compiled successfully.\n")
+$(NAME): $(OBJS)	
+	@make -C $(LIBFT)
+	@$(CC) $(CFLAGS) $(OBJS) -L$(LIBFT) -lft -o $(NAME) $(LDFLAGS) && \
+	(printf "Compiled successfully.\n")
 
 $(OBJ_DIR)/%.o:	$(SRC_DIR)/%.c $(HEADER_FILE)
 	@mkdir -p $(dir $@)
@@ -44,6 +44,7 @@ clean:
 fclean: clean
 	@rm -rf $(OBJ_DIR)
 	@rm -f $(NAME)
+	@make -s -C $(LIBFT) fclean
 	@printf "[minishell] Cleaned successfully.\n"
 
 re:	fclean all

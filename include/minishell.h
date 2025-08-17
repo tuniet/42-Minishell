@@ -25,7 +25,7 @@
 # include <sys/wait.h>
 # include <term.h>
 # include <unistd.h>
-
+# include "../libft/libft.h"
 // DEFINES
 # define MAX_TOKENS 100
 
