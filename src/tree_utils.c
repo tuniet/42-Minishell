@@ -69,6 +69,7 @@ static void	print_command(t_treenode *node, int level)
 		print_redirects(node->cmd->redirects, level + 1);
 }
 */
+/*
 void	print_tree(t_treenode *node, int level)
 {
 	int	i;
@@ -92,6 +93,7 @@ void	print_tree(t_treenode *node, int level)
 		print_command(node, level);
 	print_tree(node->left, level + 1);
 }
+*/
 
 int	is_redirection(t_node_type type)
 {
@@ -113,7 +115,7 @@ t_treenode	*new_node(t_node_type type)
 	return (node);
 }
 
-static t_treenode	*build_binary_node(t_token *tokens[], int start, int end,
+t_treenode	*build_binary_node(t_token *tokens[], int start, int end,
 		int op_index)
 {
 	t_treenode	*node;

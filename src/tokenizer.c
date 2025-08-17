@@ -12,7 +12,7 @@
 
 #include "../include/minishell.h"
 
-void	print_tokens(t_token **tokens, int count);
+//void	print_tokens(t_token **tokens, int count);
 
 static t_node_type	get_token_type(const char *str)
 {

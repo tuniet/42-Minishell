@@ -26,7 +26,7 @@ static void	make_pwd(t_data *data, char *prompt)
 	}
 }
 
-static int	print_prompt(char *prompt, char *user, char *host, t_data *data)
+int	print_prompt(char *prompt, char *user, char *host, t_data *data)
 {
 	ft_strcpy(prompt, BRIGHT_GREEN);
 	ft_strcat(prompt, user);

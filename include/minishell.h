@@ -90,34 +90,43 @@ typedef struct s_data
 	int			iExit;
 }	t_data;
 
-// Prompt functions
-int set_prompt(t_data* data);
-int get_prompt(char **p, t_data *data);
-int init_data(t_data *data, char *envp[]);
+// prompt.c
+int			set_prompt(t_data* data);
+int			get_prompt(char **p, t_data *data);
+int			init_data(t_data *data, char *envp[]);
 char		*mini_getenv(char *var, char *envp[]);
+
+// prompt_utils.c
+int			print_prompt(char *prompt, char *user, char *host, t_data *data);
 
 // tokenizer.c 
 int			tokenize(char *line, t_token **tokens);
-int 		parse_line(char *line, t_data *data);
 
-// parsing functions
+// tokenizer_utils.c 
+int			is_metachar(int c);
+char		*get_token_end(char *line);
+
+// tree.c
 t_treenode	*build_tree(t_token *tokens[], int start, int end);
-void		print_tree(t_treenode *node, int level);
-// parsing utils:
-t_command	*init_command(void);
-void		print_tree(t_treenode *node, int level);
+
+// tree_utils.c
+t_treenode	*build_binary_node(t_token *tokens[], int start, int end, int op_index);
 int			is_redirection(t_node_type type);
 t_treenode	*new_node(t_node_type type);
 
+// tree_utils.c (print_tree only)
+void		print_tree(t_treenode *node, int level);
+t_command	*init_command(void);
+
 // String functions
-char	*ft_strcpy(char *dest, char *src);
-char	*ft_strcat(char *dest, char *src);
-char	*ft_strdup(const char *src);
-size_t	ft_strlen(const char *s);
-int ft_strncmp(const char *s1, const char *s2, size_t n);
-void *ft_memcpy(void *dest, const void *src, size_t n);
-int ft_strcmp(const char *s1, const char *s2);
-size_t	ft_strlcpy(char *dst, const char *src, size_t size);
+char		*ft_strcpy(char *dest, char *src);
+char		*ft_strcat(char *dest, char *src);
+char		*ft_strdup(const char *src);
+size_t		ft_strlen(const char *s);
+int			ft_strncmp(const char *s1, const char *s2, size_t n);
+void		 *ft_memcpy(void *dest, const void *src, size_t n);
+int			ft_strcmp(const char *s1, const char *s2);
+size_t		ft_strlcpy(char *dst, const char *src, size_t size);
 
 // execute.c
 int		execute_tree(t_treenode *node, char **envp, t_data *data);
@@ -156,10 +165,6 @@ void		free_argv(char **argv);
 int			argv_len(char **argv);
 char		**copy_argv(char **src, int *index, char **res);
 char		**argv_join(char **argv, char **exp);
-
-// Aux functions
-int			is_metachar(int c);
-char		*get_token_end(char *line);
 
 // ft_split.c
 char		**ft_split(const char *s, char c);

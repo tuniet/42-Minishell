@@ -31,11 +31,11 @@ int	compute_line(char *line, t_data *data)
 		return (0);
 	data->tokens_size = count;
 	printf("tokens_size = [%d]\n", data->tokens_size);
-	print_tokens(data->tokens, data->tokens_size);
+	//print_tokens(data->tokens, data->tokens_size);
 	data->ast_root = build_tree(data->tokens, 0, count - 1);
 	if (!data->ast_root)
 		return (0);
-	print_tree(data->ast_root, 0);
+	//print_tree(data->ast_root, 0);
 	execute_tree(data->ast_root, data->envp, data);
 	return (1);
 }
