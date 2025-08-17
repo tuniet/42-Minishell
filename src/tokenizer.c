@@ -4,21 +4,21 @@ void	print_tokens(t_token **tokens, int count);
 
 static t_node_type	get_token_type(const char *str)
 {
-	if (strcmp(str, "<<") == 0)
+	if (ft_strcmp(str, "<<") == 0)
 		return (TOKEN_HEREDOC);
-	if (strcmp(str, ">>") == 0)
+	if (ft_strcmp(str, ">>") == 0)
 		return (TOKEN_APPEND);
-	if (strcmp(str, "&&") == 0)
+	if (ft_strcmp(str, "&&") == 0)
 		return (TOKEN_AND);
-	if (strcmp(str, "||") == 0)
+	if (ft_strcmp(str, "||") == 0)
 		return (TOKEN_OR);
-	if (strcmp(str, "|") == 0)
+	if (ft_strcmp(str, "|") == 0)
 		return (TOKEN_PIPE);
-	if (strcmp(str, "<") == 0)
+	if (ft_strcmp(str, "<") == 0)
 		return (TOKEN_REDIRECT_IN);
-	if (strcmp(str, ">") == 0)
+	if (ft_strcmp(str, ">") == 0)
 		return (TOKEN_REDIRECT_OUT);
-	if (strcmp(str, "&") == 0)
+	if (ft_strcmp(str, "&") == 0)
 		return (TOKEN_AMPERSANT);
 	return (TOKEN_WORD);
 }

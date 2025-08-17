@@ -104,10 +104,11 @@ char	*ft_strdup(const char *src);
 size_t	ft_strlen(const char *s);
 int ft_strncmp(const char *s1, const char *s2, size_t n);
 void *ft_memcpy(void *dest, const void *src, size_t n);
+int ft_strcmp(const char *s1, const char *s2);
 
 // execute.c
 int		execute_tree(t_treenode *node, char **envp, t_data *data);
-//int		execute_tree(t_treenode *node, char **envp);
+
 // execute_utils.c
 char	*find_executable(char *command, char **envp);
 
@@ -139,6 +140,13 @@ char		**ft_split(const char *s, char c);
 //
 int		is_builtin(const char *cmd);
 int		execute_builtin(char **argv, t_data *data);
+int		mini_echo(char **argv);
+int		mini_pwd(void);
+int		mini_env(t_data *data, char **argv);
+int		mini_cd(char **argv, t_data *data);
+int		mini_exit(char **argv);
+int		mini_export(char **argv, t_data *data);
+int		mini_unset(char **argv, t_data *data);
 
 //signals.c
 void	handle_sigint(int sig);

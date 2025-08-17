@@ -12,7 +12,7 @@ SRCS		=		$(addprefix $(SRC_DIR)/, \
 					free.c mem.c \
 					expand.c expand_utils.c \
 					ft_split.c \
-					builtins.c )
+					builtins.c builtins_utils.c unset_export.c )
 
 OBJ_DIR		=		./obj
 OBJS		=		$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

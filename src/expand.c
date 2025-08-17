@@ -153,6 +153,25 @@ static char	**expand_token(char *tok, char **envp, int st)
 	return (ft_split(res, ' '));
 }
 
+static char	**copy_argv(char **src, int *index, char **res)
+{
+	int	i;
+
+	i = 0;
+	while (src && src[i])
+	{
+		res[*index] = strdup(src[i]);
+		if (!res[*index])
+		{
+			free_argv(res);
+			return (NULL);
+		}
+		(*index)++;
+		i++;
+	}
+	return (res);
+}
+
 static char	**argv_join(char **argv, char **exp)
 {
 	int		size1;
@@ -168,27 +187,18 @@ static char	**argv_join(char **argv, char **exp)
 		return (NULL);
 
 	i = 0;
-	while (argv && argv[i])
-	{
-		res[i] = strdup(argv[i]);
-		if (!res[i])
-			return (free_argv(res), NULL);
-		i++;
-	}
+	if (!copy_argv(argv, &i, res))
+		return (NULL);
 	j = 0;
-	while (exp && exp[j])
-	{
-		res[i] = strdup(exp[j]);
-		if (!res[i])
-			return (free_argv(res), NULL);
-		i++;
-		j++;
-	}
+	if (!copy_argv(exp, &i, res))
+		return (NULL);
+
 	res[i] = NULL;
 	free(argv);
 	free(exp);
 	return (res);
 }
+
 
 
 char	**expand(t_token **tokens, char **envp, int iExit)

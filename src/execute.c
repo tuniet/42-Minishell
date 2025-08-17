@@ -1,7 +1,5 @@
 #include "../include/minishell.h"
 
-int execute_tree(t_treenode *node, char **envp, t_data *data);
-
 int	apply_redirections(t_redirect *redir_list)
 {
 	t_redirect	*redir;
@@ -18,10 +16,8 @@ int	apply_redirections(t_redirect *redir_list)
 			fd = open(redir->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		else
 			return (-1); // TODO: ADD HEREDOC
-
 		if (fd < 0)
 			return (-1);
-
 		if (redir->type == TOKEN_REDIRECT_IN)
 			dup2(fd, STDIN_FILENO);
 		else
@@ -32,63 +28,70 @@ int	apply_redirections(t_redirect *redir_list)
 	return (0);
 }
 
-#define IS_BUILTIN 0
-int	execute_command_node(t_treenode *node, char **envp, t_data *data)
+static void	run_child_process(t_treenode *node,
+				char **argv, char **envp)
 {
-	pid_t	pid;
-	int		status;
 	char	*path;
-	char	**argv;
-	//TODO: free argv 
-	argv = expand(node->cmd->argv, envp, data->iExit);
-	printf("\nAFTER EXPANSION : \n");
-	for (int i = 0; argv[i]; i++)
+
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	if (apply_redirections(node->cmd->redirects) != 0)
 	{
-		printf("Expanded [%d] : %s\n", i+1, argv[i]);
+		perror("Redirection error");
+		exit(1);
 	}
-	//TODO: update iExit
-	if (is_builtin(argv[0]))
-        return execute_builtin(argv, data);
-	pid = fork();
-	if (pid == 0)
+	if (!argv)
+		exit(1);
+	path = find_executable(argv[0], envp);
+	/* Debug:
+	fprintf(stderr, "CMD Path : %s\n\n", path);
+	*/
+	if (!path)
 	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
-		if (apply_redirections(node->cmd->redirects) != 0)
-		{
-			perror("Redirection error");
-			exit(1);
-		}
-		if (!argv)
-			exit(1);
-		path = find_executable(argv[0], envp);
-		fprintf(stderr, "CMD Path : %s\n\n", path);
-		if (!path)
-		{
-			fprintf(stderr, "%s: command not found\n", argv[0]);
-			exit(127);
-		}
-		execve(path, argv, envp);
-		perror("execv failed");
+		fprintf(stderr, "%s: command not found\n", argv[0]);
 		exit(127);
 	}
+	execve(path, argv, envp);
+	perror("execv failed");
+	exit(127);
+}
+
+static int	handle_child_status(pid_t pid, t_data *data)
+{
+	int	status;
+
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	waitpid(pid, &status, 0);
 	data->iExit = WEXITSTATUS(status);
 	signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, handle_sigquit);
-
-	//TODO: Comprobar si el resultado de $? es correcto al salir por Ctrl+C
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-    	write(1, "\n", 1);
-	return (data->iExit);
-	/*
-	waitpid(pid, &status, 0);
+		write(1, "\n", 1);
 	data->iExit = WEXITSTATUS(status);
 	return (data->iExit);
-	*/
 }
+
+int	execute_command_node(t_treenode *node, char **envp, t_data *data)
+{
+	pid_t	pid;
+	char	**argv;
+	int		i;
+
+	argv = expand(node->cmd->argv, envp, data->iExit);
+	/* Debug:
+	printf("\nAFTER EXPANSION : \n");
+	for (i = 0; argv[i]; i++)
+		printf("Expanded [%d] : %s\n", i + 1, argv[i]);
+	*/
+	if (is_builtin(argv[0]))
+		return (execute_builtin(argv, data));
+	pid = fork();
+	if (pid == 0)
+		run_child_process(node, argv, envp);
+	return (handle_child_status(pid, data));
+}
+
 
 int	execute_pipe_node(t_treenode *node, char **envp, t_data *data)
 {

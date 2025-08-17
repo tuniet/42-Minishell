@@ -18,34 +18,25 @@ static char *join_path(const char *dir, const char *command)
 	return (full);
 }
 
-char *find_executable(char *command, char **envp)
+static char	*check_direct_path(char *command)
 {
-	char	*path;
-	char	*paths, *dir, *full_path;
+	if (access(command, X_OK) == 0)
+		return (strdup(command));
+	return (NULL);
+}
+
+static char	*search_in_path(char *paths, char *command)
+{
+	char	*dir;
+	char	*full_path;
 	char	*saveptr;
-
-	path = mini_getenv("PATH", envp);
-	if (strchr(command, '/'))
-	{
-		if (access(command, X_OK) == 0)
-			return (strdup(command));
-		else
-			return (NULL);
-	}
-	if (!path)
-		return (NULL);
-
-	paths = strdup(path);
-	if (!paths)
-		return (NULL);
 
 	dir = strtok_r(paths, ":", &saveptr);
 	while (dir)
 	{
 		full_path = join_path(dir, command);
 		if (!full_path)
-			break;
-
+			break ;
 		if (access(full_path, X_OK) == 0)
 		{
 			free(paths);
@@ -57,4 +48,23 @@ char *find_executable(char *command, char **envp)
 	free(paths);
 	return (NULL);
 }
+
+char	*find_executable(char *command, char **envp)
+{
+	char	*path;
+	char	*paths;
+
+	path = mini_getenv("PATH", envp);
+	if (strchr(command, '/'))
+		return (check_direct_path(command));
+	if (!path)
+		return (NULL);
+	paths = strdup(path);
+	if (!paths)
+		return (NULL);
+	return (search_in_path(paths, command));
+}
+
+
+
 

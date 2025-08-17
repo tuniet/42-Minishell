@@ -19,10 +19,50 @@ t_command *init_command(void)
 	return (cmd);
 }
 
+static void	print_redirects(t_redirect *redir, int level)
+{
+	int	i;
+
+	while (redir)
+	{
+		i = 0;
+		while (i < level)
+		{
+			printf("    ");
+			i++;
+		}
+		printf("Redirect: %s %s\n",
+			redir->type == TOKEN_REDIRECT_IN ? "<" :
+			redir->type == TOKEN_REDIRECT_OUT ? ">" :
+			redir->type == TOKEN_HEREDOC ? "<<" :
+			redir->type == TOKEN_APPEND ? ">>" : "?",
+			redir->filename);
+		redir = redir->next;
+	}
+}
+
+static void	print_command(t_treenode *node, int level)
+{
+	int	i;
+
+	printf("[COMMAND]");
+	if (node->cmd && node->cmd->argv)
+	{
+		i = 0;
+		while (node->cmd->argv[i])
+		{
+			printf(" %s", node->cmd->argv[i]->content);
+			i++;
+		}
+	}
+	printf("\n");
+	if (node->cmd)
+		print_redirects(node->cmd->redirects, level + 1);
+}
+
 void	print_tree(t_treenode *node, int level)
 {
-	t_redirect	*redir;
-	int			i;
+	int	i;
 
 	if (!node)
 		return;
@@ -40,38 +80,10 @@ void	print_tree(t_treenode *node, int level)
 	else if (node->type == TOKEN_OR)
 		printf("[OR]\n");
 	else if (node->type == TOKEN_COMMAND)
-	{
-		printf("[COMMAND]");
-		if (node->cmd && node->cmd->argv)
-		{
-			i = 0;
-			while (node->cmd->argv[i])
-			{
-				printf(" %s", node->cmd->argv[i]->content);
-				i++;
-			}
-		}
-		printf("\n");
-		redir = node->cmd->redirects;
-		while (redir)
-		{
-			i = 0;
-			while (i < level + 1)
-			{
-				printf("    ");
-				i++;
-			}
-			printf("Redirect: %s %s\n",
-				redir->type == TOKEN_REDIRECT_IN ? "<" :
-				redir->type == TOKEN_REDIRECT_OUT ? ">" :
-				redir->type == TOKEN_HEREDOC ? "<<" :
-				redir->type == TOKEN_APPEND ? ">>" : "?",
-				redir->filename);
-			redir = redir->next;
-		}
-	}
+		print_command(node, level);
 	print_tree(node->left, level + 1);
 }
+
 
 int is_redirection(t_node_type type)
 {

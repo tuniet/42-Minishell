@@ -48,37 +48,43 @@ static int	add_redirection(t_command *cmd, t_node_type type, char *filename)
 	return (1);
 }
 
-t_treenode *parse_simple_command(t_token *tokens[], int start, int end)
+static int	process_tokens(t_command *cmd, t_token *tokens[], int start, int end)
 {
-	t_treenode	*node;
-	t_command	*cmd;
-	int			i;
+	int	i;
 
-	cmd = init_command();
-	if (!cmd)
-		return (NULL);
 	i = start;
 	while (i <= end)
 	{
 		if (tokens[i]->type == TOKEN_WORD)
 		{
-			//NOTE : cmd->argv, does not allocate new tokens
 			if (!add_argument(cmd, tokens[i]))
-				return (free_command(cmd), NULL);
+				return (0);
 		}
 		else if (is_redirection(tokens[i]->type))
 		{
 			if (i + 1 > end || tokens[i + 1]->type != TOKEN_WORD)
-				return (free_command(cmd), NULL);
+				return (0);
 			if (!add_redirection(cmd, tokens[i]->type, tokens[i + 1]->content))
-				return (free_command(cmd), NULL);
+				return (0);
 			i++;
 		}
 		else
-			return (free_command(cmd), NULL);
+			return (0);
 		i++;
 	}
-	//TODO: Error redirection without a valid command
+	return (1);
+}
+
+t_treenode	*parse_simple_command(t_token *tokens[], int start, int end)
+{
+	t_treenode	*node;
+	t_command	*cmd;
+
+	cmd = init_command();
+	if (!cmd)
+		return (NULL);
+	if (!process_tokens(cmd, tokens, start, end))
+		return (free_command(cmd), NULL);
 	if (!cmd->argv || !cmd->argv[0])
 		return (free_command(cmd), NULL);
 	node = new_node(TOKEN_COMMAND);
@@ -87,6 +93,7 @@ t_treenode *parse_simple_command(t_token *tokens[], int start, int end)
 	node->cmd = cmd;
 	return (node);
 }
+
 
 static t_treenode *build_binary_node(t_token *tokens[], int start, int end, int op_index)
 {
