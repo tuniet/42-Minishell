@@ -133,21 +133,33 @@ void free_redirects(t_redirect *redir);
 void free_command(t_command *cmd);
 
 // free.c
-void	free_tokens(t_token **tokens);
-void	free_tree(t_treenode *node);
-void	free_all(t_data *data, int flag);
+void		free_tokens(t_token **tokens);
+void		free_tree(t_treenode *node);
+void		free_all(t_data *data, int flag);
 
 // expand.c
-char	**expand(t_token **tokens, char **envp, int iExit);
-char	*expand_token_(char *tok, char **envp, int iExit);
-char	*strjoin_free(char *s1, char *s2);
+char		**expand(t_token **tokens, char **envp, int iExit);
+char		*expand_other(const char *s, int *i, char **envp, int st);
+char		*expand_double_quote(const char *s, int *i, char **envp, int st);
+char		*expand_single_quote(const char *s, int *i);
+
+// expand_wildcard.c
+char		**expand_wildcards(const char *pattern);
+
+// expand_utils.c
+char		*strjoin_free(char *s1, char *s2);
+char		*expand_token_(char *tok, char **envp, int iExit);
+char		*expand_variable(const char *s, int *i, char **envp, int st);
+
+// argv_funcs.c
+void		free_argv(char **argv);
+int			argv_len(char **argv);
+char		**copy_argv(char **src, int *index, char **res);
+char		**argv_join(char **argv, char **exp);
 
 // Aux functions
 int			is_metachar(int c);
 char		*get_token_end(char *line);
-
-int			argv_len(char **argv);
-void		free_argv(char **argv);
 
 // ft_split.c
 char		**ft_split(const char *s, char c);
