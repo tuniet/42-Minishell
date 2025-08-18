@@ -21,8 +21,8 @@ OBJS		=		$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 #CFLAGS		=		-Wall -Wextra -Werror
 #CFLAGS		=		-g -O0 -Werror
 CFLAGS		=		-g -fsanitize=address -Wall -Wextra -Werror
-#LDFLAGS		=		-lreadline #-lhistory
-LDFLAGS		=	-L/opt/homebrew/opt/readline/lib -lreadline #-lhistory
+LDFLAGS		=		-lreadline -lhistory
+#LDFLAGS		=	-L/opt/homebrew/opt/readline/lib -lreadline #-lhistory
 CC			=		cc
 
 all:	${NAME}
@@ -34,7 +34,7 @@ $(NAME): $(OBJS)
 
 $(OBJ_DIR)/%.o:	$(SRC_DIR)/%.c $(HEADER_FILE)
 	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) -c $< -o $@ -I $(INC_DIR) -I /opt/homebrew/opt/readline/include/
+	@$(CC) $(CFLAGS) -c $< -o $@ -I $(INC_DIR)
 
 clean:
 	@rm -f $(OBJS)
