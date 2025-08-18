@@ -90,6 +90,8 @@ int	get_prompt(char **p, t_data *data)
 	char	prompt[4096];
 
 	data->home = mini_getenv("HOME", data->envp);
+	if(!data->home)
+		data->home = "/home";
 	user = mini_getenv("USER", data->envp);
 	if (!user)
 		user = "minishell";

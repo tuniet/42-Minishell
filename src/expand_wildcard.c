@@ -75,10 +75,15 @@ char	**expand_wildcards(const char *pattern)
 	struct dirent	*ent;
 	char			**matches;
 	int				count;
-
+	char			**ret;
 	dir = opendir(".");
 	if (!dir)
-		return (ft_split(pattern, ' '));
+	{
+		ret = malloc(sizeof(char *) * 2);
+		ret[0] = ft_strdup(pattern);
+		ret[1] = NULL;
+		return (ret);
+	}
 	matches = NULL;
 	count = 0;
 	ent = readdir(dir);

@@ -68,8 +68,18 @@ char	*expand_variable(const char *s, int *i, char **envp, int st)
 	char	*name;
 	char	*value;
 	char	buf[12];
+	printf("aqui\n");
 
+	if(s[(*i)+1])
+	{
+		if (!ft_isalnum(s[(*i)+1]))
+		{
+			(*i)++;
+			return (strdup("$"));
+		}
+	}
 	(*i)++;
+	printf("aqui2\n");
 	if (s[*i] == '?')
 	{
 		(*i)++;

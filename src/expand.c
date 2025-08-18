@@ -53,12 +53,29 @@ char	*expand_double_quote(const char *s, int *i, char **envp, int st)
 char	*expand_other(const char *s, int *i, char **envp, int st)
 {
 	char	tmp[2];
-
+	char	*ret;
+	char	**aux;
+	int		j;
 	if (s[*i] == '$')
-		return (expand_variable(s, i, envp, st));
+	{
+		ret = expand_variable(s, i, envp, st);
+		aux = ft_split(ret, ' ');
+		free(ret);
+		ret = ft_strdup("");
+		j = 0;
+		while(aux[j])
+		{
+			ret = strjoin_free(ret, aux[j]);
+			if(aux[j + 1])
+				ret = strjoin_free(ret, ft_strdup(" "));
+			j++;
+		}
+		free(aux);
+		return (ret);
+	}
 	tmp[0] = s[(*i)++];
 	tmp[1] = '\0';
-	return (strdup(tmp));
+	return (ft_strdup(tmp));
 }
 
 static char	**expand_token(char *tok, char **envp, int st)
@@ -80,8 +97,16 @@ static char	**expand_token(char *tok, char **envp, int st)
 		res = strjoin_free(res, part);
 	}
 	if (!ctx.had_q && strchr(res, '*'))
-		return (expand_wildcards(res));
-	ret = ft_split(res, ' ');
+	{
+		ret = expand_wildcards(res);
+		free(res);
+		return (ret);
+	}
+	printf("res : %s\n", res);
+	ret = malloc(sizeof(char *) * 2);
+	ret[0] = ft_strdup(res);
+	ret[1] = NULL;
+	//ret = ft_split(res, ' ');
 	free(res);
 	return (ret);
 }

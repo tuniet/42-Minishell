@@ -12,14 +12,16 @@
 
 #include "../include/minishell.h"
 
-/*
+
 void	print_tokens(t_token **tokens, int count)
 {
-	while (int i = 0; i < count; i++)
+	for(int i = 0; i < count; i++)
+	{
 		printf("[%d] Type: %d | Value: %s\n", i, tokens[i]->type,
 			tokens[i]->content);
+	}	
 }
-*/
+
 int	compute_line(char *line, t_data *data)
 {
 	int	count;
@@ -30,8 +32,8 @@ int	compute_line(char *line, t_data *data)
 	if (count <= 0)
 		return (0);
 	data->tokens_size = count;
-	//printf("tokens_size = [%d]\n", data->tokens_size);
-	//print_tokens(data->tokens, data->tokens_size);
+	printf("tokens_size = [%d]\n", data->tokens_size);
+	print_tokens(data->tokens, data->tokens_size);
 	data->ast_root = build_tree(data->tokens, 0, count - 1);
 	if (!data->ast_root)
 		return (0);
