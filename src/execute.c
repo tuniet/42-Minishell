@@ -6,7 +6,7 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:16:04 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 23:15:56 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/20 01:02:48 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -93,12 +93,25 @@ static int	handle_child_status(pid_t pid, t_data *data)
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	waitpid(pid, &status, 0);
-	data->i_exit = WEXITSTATUS(status);
-	signal(SIGINT, handle_sigint);
-	signal(SIGQUIT, handle_sigquit);
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-		write(1, "\n", 1);
-	data->i_exit = WEXITSTATUS(status);
+	setup_signals();
+	if (WIFSIGNALED(status))
+	{
+		int sig = WTERMSIG(status);
+		if (sig == SIGINT)
+		{
+			printf("\n");
+			data->i_exit = 130; // Standard exit code for SIGINT
+		}
+		else if (sig == SIGQUIT)
+		{
+			printf("Quit: (Core dumped)\n");
+			data->i_exit = 131; // Standard exit code for SIGQUIT
+		}
+		else
+			data->i_exit = 128 + sig;
+	}
+	else if (WIFEXITED(status))
+		data->i_exit = WEXITSTATUS(status);
 	return (data->i_exit);
 }
 

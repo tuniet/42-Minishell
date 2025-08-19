@@ -6,11 +6,19 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 20:22:51 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 21:59:17 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/20 01:54:14 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
 #include "../include/minishell.h"
+
+static void sigint_handler_heredoc(int sig)
+{
+    (void)sig;
+    write(1, "\n", 1);            // print newline
+    signal(SIGINT, SIG_DFL);      // reset handler to default
+    kill(getpid(), SIGINT);       // send SIGINT to myself
+}
 
 static char	*expand_variable_(const char *s, int *i, char **envp, int i_exit)
 {
@@ -48,7 +56,7 @@ static char	*expand_line(char *tok, char **envp, int i_exit)
 
 	res = strdup("");
 	if (!res)
-		return (free(tok), NULL);
+		return (NULL);
 	i = 0;
 	while (tok[i])
 	{
@@ -62,36 +70,83 @@ static char	*expand_line(char *tok, char **envp, int i_exit)
 			part = strndup(tok + start, i - start);
 		}
 		if (!part)
-			return (free(res), free(tok), NULL);
+			return (free(res), NULL);
 		res = strjoin_free(res, part);
 	}
-	return (free(tok), res);
+	return (res);
 }
 
-int	heredoc(char *delimiter, t_data *data)
+static int heredoc_child(char *delimiter, t_data *data, int pipefd[2])
 {
-	int		pipefd[2];
-	char	*line;
+    //char *line;
 
-	if (pipe(pipefd) < 0)
-		return (free(delimiter), -1);
-	while (1)
+    signal(SIGINT, sigint_handler_heredoc); // simple setup
+
+    close(pipefd[0]);
+
+while (1)
+{
+    char *raw_line = readline("> ");
+    if (!raw_line) // Ctrl+D
+    {
+        close(pipefd[1]);
+        exit(0);
+    }
+
+    if (strcmp(raw_line, delimiter) == 0)
+    {
+        free(raw_line);
+        close(pipefd[1]);
+        exit(0);
+    }
+
+    char *line = expand_line(raw_line, data->envp, data->i_exit);
+    free(raw_line); // free immediately after expanding
+    if (!line) // allocation failed
+    {
+        close(pipefd[1]);
+        exit(1);
+    }
+
+    write(pipefd[1], line, strlen(line));
+    write(pipefd[1], "\n", 1);
+    free(line);
+}
+    close(pipefd[1]);
+    return (0); // normal end of heredoc
+}
+
+int heredoc(char *delimiter, t_data *data)
+{
+    int     pipefd[2];
+    pid_t   pid;
+    int     status;
+
+    if (pipe(pipefd) < 0)
+        return (-1);
+
+    pid = fork();
+    if (pid == -1)
+        return (-1);
+
+    if (pid == 0)
+        heredoc_child(delimiter, data, pipefd);
+
+    // parent ignores SIGINT during heredoc
+    signal(SIGINT, SIG_IGN);
+
+    close(pipefd[1]);
+    waitpid(pid, &status, 0);
+
+    // restore normal signals
+    setup_signals();
+
+    if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
 	{
-		line = readline("> ");
-		if (!line || strcmp(line, delimiter) == 0)
-		{
-			free(line);
-			break ;
-		}
-		line = expand_line(line, data->envp, data->i_exit);
-		if (line)
-		{
-			write(pipefd[1], line, strlen(line));
-			write(pipefd[1], "\n", 1);
-			free(line);
-		}
+		data->i_exit = 130;
+		close(pipefd[0]);
+		return (-1);
 	}
-	free(delimiter);
-	close(pipefd[1]);
-	return (pipefd[0]);
+    data->i_exit = WEXITSTATUS(status);
+    return (pipefd[0]);
 }

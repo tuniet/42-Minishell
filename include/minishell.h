@@ -6,7 +6,7 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:14:21 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 22:53:10 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/20 01:02:36 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -216,8 +216,8 @@ int						find_env_index(char **envp, const char *name);
 int						update_envp(char **envp, char *var, char *new_value);
 
 // signals.c
-void					handle_sigint(int sig);
-void					handle_sigquit(int sig);
+void					sigint_handler(int sig);
+void					sigint_handler_nonl(int sig);
 void					setup_signals(void);
 // heredoc.c
 int						heredoc(char *delimiter, t_data *data);

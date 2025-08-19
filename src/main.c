@@ -6,12 +6,11 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:17:53 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 22:00:39 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 23:57:49 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
 #include "../include/minishell.h"
-
 
 void	print_tokens(t_token **tokens, int count)
 {

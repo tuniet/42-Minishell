@@ -6,7 +6,7 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:15:30 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 23:22:43 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 23:44:47 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -41,7 +41,7 @@ int	mini_cd(char **argv, t_data *data)
         path = mini_getenv("HOME", data->envp);
         if (!path)
         {
-            write(2, "cd: HOME no está definido\n", 26);
+            write(2, "cd: HOME no está definido\n", 28);
             return (1);
         }
     }

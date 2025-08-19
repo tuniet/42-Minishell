@@ -1,34 +1,36 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:18:27 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 18:18:29 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/20 01:33:00 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/minishell.h"
 
-void	handle_sigint(int sig)
+void	sigint_handler_nonl(int sig)
 {
-	(void)sig;
-	rl_replace_line("", 0);
-	write(1, "\n", 1);
 	rl_on_new_line();
+	rl_replace_line("", 0);
 	rl_redisplay();
+	(void) sig;
 }
 
-void	handle_sigquit(int sig)
+void	sigint_handler(int sig)
 {
-	(void)sig;
-	write(1, "\b\b  \b\b", 6);
+	printf("\n");
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+	(void) sig;
 }
 
 void	setup_signals(void)
 {
-	signal(SIGINT, handle_sigint);
-	signal(SIGQUIT, handle_sigquit);
+	signal(SIGINT, sigint_handler);
+	signal(SIGQUIT, SIG_IGN);
 }
