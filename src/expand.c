@@ -6,7 +6,7 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:16:24 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 20:17:51 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 20:59:05 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -78,7 +78,7 @@ char	*expand_other(const char *s, int *i, char **envp, int st)
 	return (ft_strdup(tmp));
 }
 
-static char	*expand_token_build(char *tok, char **envp, int st, t_expand_ctx *ctx)
+static char	*expand_token_build(char *tok, t_expand_ctx *ctx)
 {
     char	*res;
     int		i;
@@ -103,7 +103,7 @@ static char	**expand_token(char *tok, char **envp, int st)
     ctx.envp = envp;
     ctx.status = st;
     ctx.had_q = 0;
-    res = expand_token_build(tok, envp, st, &ctx);
+    res = expand_token_build(tok, &ctx);
     if (!ctx.had_q && strchr(res, '*'))
     {
         ret = expand_wildcards(res);
