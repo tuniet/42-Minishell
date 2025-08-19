@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   tree_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:19:07 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 18:19:09 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 21:29:08 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/minishell.h"
 
@@ -115,20 +115,24 @@ t_treenode	*new_node(t_node_type type)
 	return (node);
 }
 
-t_treenode	*build_binary_node(t_token *tokens[], int start, int end,
+t_treenode	*build_binary_node(t_token *tokens[], int start_end[],
 		int op_index, t_data *data)
 {
 	t_treenode	*node;
 	t_treenode	*left;
 	t_treenode	*right;
-
+	int			se[2];
+	se[0] = start_end[0];
+	se[1] = op_index - 1;
 	node = new_node(tokens[op_index]->type);
 	if (!node)
 		return (NULL);
-	left = build_tree(tokens, start, op_index - 1, data);
+	left = build_tree(tokens, se, data);
 	if (!left)
 		return (free(node), NULL);
-	right = build_tree(tokens, op_index + 1, end, data);
+	se[0] = op_index + 1;
+	se[1] = start_end[1];
+	right = build_tree(tokens, se, data);
 	if (!right)
 	{
 		free_tree(left);

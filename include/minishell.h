@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:14:21 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 18:14:23 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 21:25:51 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -119,15 +119,13 @@ int						tokenize(char *line, t_token **tokens);
 int						parse_line(char *line, t_data *data);
 
 // tree.c
-t_treenode				*build_tree(t_token *tokens[], int start,
-							int end, t_data *data);
+t_treenode				*build_tree(t_token *tokens[], int start_end[], t_data *data);
 void					print_tree(t_treenode *node, int level);
 // tree_utils.c:
 t_command				*init_command(void);
 int						is_redirection(t_node_type type);
 t_treenode				*new_node(t_node_type type);
-t_treenode				*build_binary_node(t_token *tokens[], int start,
-							int end, int op_index, t_data *data);
+t_treenode				*build_binary_node(t_token *tokens[], int start_end[], int op_index, t_data *data);
 
 // tree_utils2.c:
 int						add_redirection(t_command *cmd, t_node_type type,

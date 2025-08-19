@@ -12,8 +12,7 @@ SRCS		=		$(addprefix $(SRC_DIR)/, \
 					execute.c execute_utils.c execute_tree.c\
 					tree.c tree_utils.c tree_utils2.c free_tree.c \
 					free.c mem.c \
-					builtins.c builtins_utils.c unset_export.c export.c\
-					envp.c \
+					builtins.c builtins_utils.c unset.c export.c envp.c\
 					heredoc.c signals.c prompt_utils.c )
 
 OBJ_DIR		=		./obj
@@ -28,7 +27,7 @@ CC			=		gcc
 
 all:	${NAME}
 
-$(NAME): $(OBJS)	
+$(NAME): $(OBJS)
 	@make -C $(LIBFT)
 	@$(CC) $(CFLAGS) $(OBJS) -L$(LIBFT) -lft -o $(NAME) $(LDFLAGS) && \
 	(printf "Compiled successfully.\n")

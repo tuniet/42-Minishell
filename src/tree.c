@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   tree.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:18:58 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 18:18:59 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 21:25:27 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/minishell.h"
 static int	handle_word(t_command *cmd, t_token *token)
@@ -76,25 +76,25 @@ t_treenode	*parse_simple_command(t_token *tokens[],
 	return (node);
 }
 
-t_treenode	*build_tree(t_token *tokens[], int start, int end, t_data *data)
+t_treenode	*build_tree(t_token *tokens[], int start_end[], t_data *data)
 {
 	int	i;
 
-	if (start > end)
+	if (start_end[0] > start_end[1])
 		return (NULL);
-	i = start;
-	while (i <= end)
+	i = start_end[0];
+	while (i <= start_end[1])
 	{
 		if (tokens[i]->type == TOKEN_AND || tokens[i]->type == TOKEN_OR)
-			return (build_binary_node(tokens, start, end, i, data));
+			return (build_binary_node(tokens, start_end, i, data));
 		i++;
 	}
-	i = start;
-	while (i <= end)
+	i = start_end[0];
+	while (i <= start_end[1])
 	{
 		if (tokens[i]->type == TOKEN_PIPE)
-			return (build_binary_node(tokens, start, end, i, data));
+			return (build_binary_node(tokens, start_end, i, data));
 		i++;
 	}
-	return (parse_simple_command(tokens, start, end, data));
+	return (parse_simple_command(tokens, start_end[0], start_end[1], data));
 }

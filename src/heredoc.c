@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 20:22:51 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 20:22:52 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 21:59:17 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/minishell.h"
 
@@ -48,7 +48,7 @@ static char	*expand_line(char *tok, char **envp, int i_exit)
 
 	res = strdup("");
 	if (!res)
-		return (NULL);
+		return (free(tok), NULL);
 	i = 0;
 	while (tok[i])
 	{
@@ -62,10 +62,10 @@ static char	*expand_line(char *tok, char **envp, int i_exit)
 			part = strndup(tok + start, i - start);
 		}
 		if (!part)
-			return (free(res), NULL);
+			return (free(res), free(tok), NULL);
 		res = strjoin_free(res, part);
 	}
-	return (res);
+	return (free(tok), res);
 }
 
 int	heredoc(char *delimiter, t_data *data)
@@ -74,7 +74,7 @@ int	heredoc(char *delimiter, t_data *data)
 	char	*line;
 
 	if (pipe(pipefd) < 0)
-		return (-1);
+		return (free(delimiter), -1);
 	while (1)
 	{
 		line = readline("> ");
@@ -91,6 +91,7 @@ int	heredoc(char *delimiter, t_data *data)
 			free(line);
 		}
 	}
+	free(delimiter);
 	close(pipefd[1]);
 	return (pipefd[0]);
 }

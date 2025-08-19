@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:17:53 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 18:17:54 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 22:00:39 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/minishell.h"
 
@@ -19,12 +19,13 @@ void	print_tokens(t_token **tokens, int count)
 	{
 		printf("[%d] Type: %d | Value: %s\n", i, tokens[i]->type,
 			tokens[i]->content);
-	}	
+	}
 }
 
 int	compute_line(char *line, t_data *data)
 {
 	int	count;
+	int start_end[2];
 
 	if (line == NULL || line[0] == '\0')
 		return (0);
@@ -34,7 +35,9 @@ int	compute_line(char *line, t_data *data)
 	data->tokens_size = count;
 	printf("tokens_size = [%d]\n", data->tokens_size);
 	print_tokens(data->tokens, data->tokens_size);
-	data->ast_root = build_tree(data->tokens, 0, count - 1, data);
+	start_end[0] = 0;
+	start_end[1] = count - 1;
+	data->ast_root = build_tree(data->tokens, start_end, data);
 	if (!data->ast_root)
 		return (0);
 	//print_tree(data->ast_root, 0);
