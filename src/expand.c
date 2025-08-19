@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:16:24 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 18:16:25 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 20:17:51 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/minishell.h"
 
@@ -78,37 +78,49 @@ char	*expand_other(const char *s, int *i, char **envp, int st)
 	return (ft_strdup(tmp));
 }
 
+static char	*expand_token_build(char *tok, char **envp, int st, t_expand_ctx *ctx)
+{
+    char	*res;
+    int		i;
+    char	*part;
+
+    i = 0;
+    res = strdup("");
+    while (tok[i])
+    {
+        part = expand_dispatch(tok, &i, ctx);
+        res = strjoin_free(res, part);
+    }
+    return res;
+}
+
 static char	**expand_token(char *tok, char **envp, int st)
 {
-	char			*res;
-	int				i;
-	char			*part;
-	char			**ret;
-	t_expand_ctx	ctx;
+    char			*res;
+    char			**ret;
+    t_expand_ctx	ctx;
 
-	i = 0;
-	ctx.envp = envp;
-	ctx.status = st;
-	ctx.had_q = 0;
-	res = strdup("");
-	while (tok[i])
-	{
-		part = expand_dispatch(tok, &i, &ctx);
-		res = strjoin_free(res, part);
-	}
-	if (!ctx.had_q && strchr(res, '*'))
-	{
-		ret = expand_wildcards(res);
-		free(res);
-		return (ret);
-	}
-	printf("res : %s\n", res);
-	ret = malloc(sizeof(char *) * 2);
-	ret[0] = ft_strdup(res);
-	ret[1] = NULL;
-	//ret = ft_split(res, ' ');
-	free(res);
-	return (ret);
+    ctx.envp = envp;
+    ctx.status = st;
+    ctx.had_q = 0;
+    res = expand_token_build(tok, envp, st, &ctx);
+    if (!ctx.had_q && strchr(res, '*'))
+    {
+        ret = expand_wildcards(res);
+        free(res);
+        return (ret);
+    }
+    printf("res : %s\n", res);
+    if (!ctx.had_q)
+        ret = ft_split(res, ' ');
+    else
+    {
+        ret = malloc(sizeof(char *) * 2);
+        ret[0] = ft_strdup(res);
+        ret[1] = NULL;
+    }
+    free(res);
+    return (ret);
 }
 
 char	**expand(t_token **tokens, char **envp, int iExit)

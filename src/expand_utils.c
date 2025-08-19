@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   expand_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:16:30 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 18:16:32 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 20:06:39 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/minishell.h"
 
@@ -68,24 +68,16 @@ char	*expand_variable(const char *s, int *i, char **envp, int st)
 	char	*name;
 	char	*value;
 	char	buf[12];
-	printf("aqui\n");
 
-	if(s[(*i)+1])
-	{
-		if (!ft_isalnum(s[(*i)+1]))
-		{
-			(*i)++;
-			return (strdup("$"));
-		}
-	}
 	(*i)++;
-	printf("aqui2\n");
 	if (s[*i] == '?')
 	{
 		(*i)++;
 		snprintf(buf, sizeof(buf), "%d", st);
 		return (strdup(buf));
 	}
+	if (!(ft_isalnum(s[*i])  || s[*i] == '_'))
+			return (strdup("$"));
 	start = *i;
 	while (s[*i] && (isalnum(s[*i]) || s[*i] == '_'))
 		(*i)++;
@@ -110,4 +102,9 @@ char	*expand_dispatch(char *tok, int *i, t_expand_ctx *ctx)
 		return (expand_double_quote(tok, i, ctx->envp, ctx->status));
 	}
 	return (expand_other(tok, i, ctx->envp, ctx->status));
+}
+
+int		valid_variable_char(char c)
+{
+	return (isalnum(c) || c == '_');
 }
