@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   unset_export.c                                     :+:      :+:    :+:   */
+/*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:19:22 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 18:19:25 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 23:09:55 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/minishell.h"
 
@@ -30,22 +30,21 @@ int	find_env_index(char **envp, const char *name)
 
 static int	unset_env_var(char ***envp, const char *name)
 {
-	int	idx;
-	int	count;
-	int	i;
+    int	idx;
+    int	count;
+    int	i;
 
-	i = -1;
-	idx = find_env_index(*envp, name);
-	if (idx < 0)
-		return (1);
-	free((*envp)[idx]);
-	count = 0;
-	while ((*envp)[count])
-		count++;
-	while (++i < count - 1)
-		(*envp)[i] = (*envp)[i + 1];
-	(*envp)[count - 1] = NULL;
-	return (0);
+    idx = find_env_index(*envp, name);
+    if (idx < 0)
+        return (1);
+    free((*envp)[idx]);
+    (*envp)[idx] = NULL;
+    count = 0;
+    while ((*envp)[count])
+        count++;
+    for (i = idx; i < count; i++)
+        (*envp)[i] = (*envp)[i + 1];
+    return (0);
 }
 
 int	mini_unset(char **argv, t_data *data)

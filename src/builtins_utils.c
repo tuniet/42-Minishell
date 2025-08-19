@@ -6,7 +6,7 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:15:30 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 22:03:58 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 23:22:43 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -29,18 +29,30 @@ int	mini_env(t_data *data, char **argv)
 
 int	mini_cd(char **argv, t_data *data)
 {
-	if (!argv[1] || argv[2])
+	const char *path;
+
+	if (argv[1] && argv[2])
 	{
 		write(2, "cd: solo se permite una ruta\n", 29);
 		return (1);
 	}
-	if (chdir(argv[1]) != 0)
-	{
-		perror("cd");
-		return (1);
-	}
+	if (!argv[1])
+    {
+        path = mini_getenv("HOME", data->envp);
+        if (!path)
+        {
+            write(2, "cd: HOME no está definido\n", 26);
+            return (1);
+        }
+    }
+    else
+        path = argv[1];
+    if (chdir(path) != 0)
+    {
+        perror("cd");
+        return (1);
+    }
 	free(data->pwd);
-	data->pwd = NULL;
 	data->pwd = getcwd(NULL, 0);
   	update_envp(data->envp, "PWD", data->pwd);
 	return (0);

@@ -6,26 +6,31 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:14:21 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 21:25:51 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 22:53:10 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include "../libft/libft.h"
 # include "colors.h"
-# include <ctype.h>
+# include <dirent.h>
+# include <errno.h>
 # include <fcntl.h>
+# include <limits.h>
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <signal.h>
+# include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <sys/ioctl.h>
+# include <sys/stat.h>
+# include <sys/types.h>
 # include <sys/wait.h>
-# include <term.h>
 # include <unistd.h>
-# include "../libft/libft.h"
 // DEFINES
 # define MAX_TOKENS 100
 

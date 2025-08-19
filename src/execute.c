@@ -6,7 +6,7 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:16:04 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 21:11:38 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/19 23:15:56 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -74,7 +74,7 @@ static void	run_child_process(t_treenode *node,
 		exit(1);
 	}
 	if (!argv || !argv[0])
-		exit(1);
+		exit(0);
 	path = find_executable(argv[0], envp);
 	if (!path)
 	{
