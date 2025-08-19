@@ -13,6 +13,7 @@ SRCS		=		$(addprefix $(SRC_DIR)/, \
 					tree.c tree_utils.c tree_utils2.c free_tree.c \
 					free.c mem.c \
 					builtins.c builtins_utils.c unset_export.c export.c\
+					envp.c \
 					heredoc.c signals.c prompt_utils.c )
 
 OBJ_DIR		=		./obj

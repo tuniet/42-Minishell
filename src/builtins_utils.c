@@ -42,6 +42,7 @@ int	mini_cd(char **argv, t_data *data)
 	free(data->pwd);
 	data->pwd = NULL;
 	data->pwd = getcwd(NULL, 0);
+  update_envp(data->envp, "PWD", data->pwd);
 	return (0);
 }
 

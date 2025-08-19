@@ -209,6 +209,9 @@ int						mini_export(char **argv, t_data *data);
 int						mini_unset(char **argv, t_data *data);
 int						find_env_index(char **envp, const char *name);
 
+// envp.c
+int						update_envp(char **envp, char *var, char *new_value);
+
 // signals.c
 void					handle_sigint(int sig);
 void					handle_sigquit(int sig);
