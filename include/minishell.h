@@ -46,13 +46,6 @@ typedef enum e_node_type
 	TOKEN_AMPERSANT = 11,
 }						t_node_type;
 
-typedef struct s_expand_ctx
-{
-	char	**envp;
-	int		status;
-	int		had_q;
-}	t_expand_ctx;
-
 typedef struct s_token
 {
 	t_node_type			type;
@@ -64,6 +57,7 @@ typedef struct s_redirect
 	t_node_type			type;
 	char				*filename;
 	struct s_redirect	*next;
+	int					hered_fd;
 }						t_redirect;
 
 typedef struct s_command
@@ -96,6 +90,22 @@ typedef struct s_data
 	int					i_exit;
 }						t_data;
 
+// CTX STRUCTS
+typedef struct s_parse_ctx
+{
+	t_token		**tokens;
+	int			start;
+	int			end;
+	t_data		*data;
+}	t_parse_ctx;
+
+typedef struct s_expand_ctx
+{
+	char	**envp;
+	int		status;
+	int		had_q;
+}	t_expand_ctx;
+
 // Prompt functions
 int						set_prompt(t_data *data);
 int						get_prompt(char **p, t_data *data);
@@ -108,15 +118,21 @@ int						print_prompt(char *prompt, char *user, char *host,
 int						tokenize(char *line, t_token **tokens);
 int						parse_line(char *line, t_data *data);
 
-// parsing functions
-t_treenode				*build_tree(t_token *tokens[], int start, int end);
+// tree.c
+t_treenode				*build_tree(t_token *tokens[], int start,
+							int end, t_data *data);
 void					print_tree(t_treenode *node, int level);
-// parsing utils:
+// tree_utils.c:
 t_command				*init_command(void);
-void					print_tree(t_treenode *node, int level);
 int						is_redirection(t_node_type type);
 t_treenode				*new_node(t_node_type type);
-t_command				*init_command(void);
+t_treenode				*build_binary_node(t_token *tokens[], int start,
+							int end, int op_index, t_data *data);
+
+// tree_utils2.c:
+int						add_redirection(t_command *cmd, t_node_type type,
+							char *filename, t_data *data);
+int						add_argument(t_command *cmd, t_token *arg);
 
 // String functions
 char					*ft_strcpy(char *dest, char *src);
@@ -135,8 +151,6 @@ int						execute_command_node(t_treenode *node, char **envp,
 							t_data *data);
 int						execute_logical_node(t_treenode *node, char **envp,
 							t_data *data);
-t_treenode				*build_binary_node(t_token *tokens[], int start,
-							int end, int op_index);
 // execute_utils.c
 char					*find_executable(char *command, char **envp);
 

@@ -116,7 +116,7 @@ t_treenode	*new_node(t_node_type type)
 }
 
 t_treenode	*build_binary_node(t_token *tokens[], int start, int end,
-		int op_index)
+		int op_index, t_data *data)
 {
 	t_treenode	*node;
 	t_treenode	*left;
@@ -125,10 +125,10 @@ t_treenode	*build_binary_node(t_token *tokens[], int start, int end,
 	node = new_node(tokens[op_index]->type);
 	if (!node)
 		return (NULL);
-	left = build_tree(tokens, start, op_index - 1);
+	left = build_tree(tokens, start, op_index - 1, data);
 	if (!left)
 		return (free(node), NULL);
-	right = build_tree(tokens, op_index + 1, end);
+	right = build_tree(tokens, op_index + 1, end, data);
 	if (!right)
 	{
 		free_tree(left);

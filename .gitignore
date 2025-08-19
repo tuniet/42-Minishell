@@ -7,3 +7,4 @@ obj/
 *.bak
 .vscode/
 .DS_Store
+tester/

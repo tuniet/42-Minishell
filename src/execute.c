@@ -17,17 +17,19 @@ static int	open_redir(t_redirect *redir, t_data *data)
 	int		fd;
 	char	*filename;
 
-	filename = expand_token_(redir->filename, data->envp, data->i_exit);
+  if (redir->type == TOKEN_HEREDOC)
+    return (dup(redir->hered_fd));
+  filename = expand_token_(redir->filename, data->envp, data->i_exit);
 	if (!filename)
 		return (-1);
-	if (redir->type == TOKEN_REDIRECT_IN)
+	if (redir->type == TOKEN_REDIRECT_IN || redir->type == TOKEN_HEREDOC)
 		fd = open(filename, O_RDONLY);
 	else if (redir->type == TOKEN_REDIRECT_OUT)
 		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	else if (redir->type == TOKEN_APPEND)
 		fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	else
-		fd = heredoc(filename, data);
+  else
+    fd = -1;
 	free(filename);
 	return (fd);
 }

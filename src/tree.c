@@ -11,75 +11,38 @@
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-static int	add_argument(t_command *cmd, t_token *arg)
+static int	handle_word(t_command *cmd, t_token *token)
 {
-	t_token	**new_argv;
-	size_t	new_capacity;
+	return (add_argument(cmd, token));
+}
 
-	if (cmd->argc + 1 >= cmd->capacity)
-	{
-		new_capacity = cmd->capacity * 2;
-		new_argv = realloc(cmd->argv, sizeof(t_token *) * new_capacity);
-		if (!new_argv)
-			return (0);
-		cmd->argv = new_argv;
-		cmd->capacity = new_capacity;
-	}
-	cmd->argv[cmd->argc] = arg;
-	cmd->argc++;
-	cmd->argv[cmd->argc] = NULL;
+static int	handle_redirection(t_command *cmd, t_parse_ctx *ctx, int *i)
+{
+	if (*i + 1 > ctx->end || ctx->tokens[*i + 1]->type != TOKEN_WORD)
+		return (0);
+	if (!add_redirection(cmd, ctx->tokens[*i]->type,
+			ctx->tokens[*i + 1]->content, ctx->data))
+		return (0);
+	(*i)++;
 	return (1);
 }
 
-static int	add_redirection(t_command *cmd, t_node_type type, char *filename)
-{
-	t_redirect	*redir;
-	t_redirect	*tmp;
-
-	redir = malloc(sizeof(t_redirect));
-	if (!redir)
-		return (0);
-	redir->type = type;
-	redir->filename = ft_strdup(filename);
-	if (!redir->filename)
-	{
-		free(redir);
-		return (0);
-	}
-	redir->next = NULL;
-	if (!cmd->redirects)
-		cmd->redirects = redir;
-	else
-	{
-		tmp = cmd->redirects;
-		while (tmp->next)
-			tmp = tmp->next;
-		tmp->next = redir;
-	}
-	return (1);
-}
-
-static int	process_tokens(t_command *cmd, t_token *tokens[], int start,
-		int end)
+static int	process_tokens(t_command *cmd, t_parse_ctx *ctx)
 {
 	int	i;
 
-	i = start;
-	while (i <= end)
+	i = ctx->start;
+	while (i <= ctx->end)
 	{
-		if (tokens[i]->type == TOKEN_WORD)
+		if (ctx->tokens[i]->type == TOKEN_WORD)
 		{
-			if (!add_argument(cmd, tokens[i]))
+			if (!handle_word(cmd, ctx->tokens[i]))
 				return (0);
 		}
-		else if (is_redirection(tokens[i]->type))
+		else if (is_redirection(ctx->tokens[i]->type))
 		{
-			if (i + 1 > end || tokens[i + 1]->type != TOKEN_WORD)
+			if (!handle_redirection(cmd, ctx, &i))
 				return (0);
-			if (!add_redirection(cmd, tokens[i]->type, tokens[i + 1]->content))
-				return (0);
-			i++;
 		}
 		else
 			return (0);
@@ -88,15 +51,21 @@ static int	process_tokens(t_command *cmd, t_token *tokens[], int start,
 	return (1);
 }
 
-t_treenode	*parse_simple_command(t_token *tokens[], int start, int end)
+t_treenode	*parse_simple_command(t_token *tokens[],
+				int start, int end, t_data *data)
 {
 	t_treenode	*node;
 	t_command	*cmd;
+	t_parse_ctx	ctx;
 
+	ctx.tokens = tokens;
+	ctx.start = start;
+	ctx.end = end;
+	ctx.data = data;
 	cmd = init_command();
 	if (!cmd)
 		return (NULL);
-	if (!process_tokens(cmd, tokens, start, end))
+	if (!process_tokens(cmd, &ctx))
 		return (free_command(cmd), NULL);
 	if (!cmd->argv || !cmd->argv[0])
 		return (free_command(cmd), NULL);
@@ -107,7 +76,7 @@ t_treenode	*parse_simple_command(t_token *tokens[], int start, int end)
 	return (node);
 }
 
-t_treenode	*build_tree(t_token *tokens[], int start, int end)
+t_treenode	*build_tree(t_token *tokens[], int start, int end, t_data *data)
 {
 	int	i;
 
@@ -117,15 +86,15 @@ t_treenode	*build_tree(t_token *tokens[], int start, int end)
 	while (i <= end)
 	{
 		if (tokens[i]->type == TOKEN_AND || tokens[i]->type == TOKEN_OR)
-			return (build_binary_node(tokens, start, end, i));
+			return (build_binary_node(tokens, start, end, i, data));
 		i++;
 	}
 	i = start;
 	while (i <= end)
 	{
 		if (tokens[i]->type == TOKEN_PIPE)
-			return (build_binary_node(tokens, start, end, i));
+			return (build_binary_node(tokens, start, end, i, data));
 		i++;
 	}
-	return (parse_simple_command(tokens, start, end));
+	return (parse_simple_command(tokens, start, end, data));
 }
