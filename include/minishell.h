@@ -229,5 +229,8 @@ int						is_protected(char *name);
 
 // error.c
 void					print_export_error(const char *arg);
+void					error_exit(const char *cmd, const char *msg, int i_exit);
+void					handle_exec_error(const char *cmd);
+void	handle_exec_error_path(char *cmd, char *path);
 
 #endif

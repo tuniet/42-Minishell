@@ -32,7 +32,7 @@ static char	*expand_variable_(const char *s, int *i, char **envp, int i_exit)
 	{
 		(*i)++;
 		snprintf(buf, sizeof(buf), "%d", i_exit);
-		return (strdup(buf));
+		return (ft_strdup(buf));
 	}
 	start = *i;
 	while (s[*i] && (isalnum(s[*i]) || s[*i] == '_'))
@@ -43,8 +43,8 @@ static char	*expand_variable_(const char *s, int *i, char **envp, int i_exit)
 	value = mini_getenv(name, envp);
 	free(name);
 	if (!value)
-		return (strdup(""));
-	return (strdup(value));
+		return (ft_strdup(""));
+	return (ft_strdup(value));
 }
 
 static char	*expand_line(char *tok, char **envp, int i_exit)
@@ -54,7 +54,7 @@ static char	*expand_line(char *tok, char **envp, int i_exit)
 	int		i;
 	int		start;
 
-	res = strdup("");
+	res = ft_strdup("");
 	if (!res)
 		return (NULL);
 	i = 0;

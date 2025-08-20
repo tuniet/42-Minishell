@@ -33,7 +33,7 @@ char	*expand_double_quote(const char *s, int *i, char **envp, int st)
 	char	tmp[2];
 
 	(*i)++;
-	res = strdup("");
+	res = ft_strdup("");
 	while (s[*i] && s[*i] != '"')
 	{
 		if (s[*i] == '$')

@@ -71,21 +71,14 @@ static void	run_child_process(t_treenode *node,
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	if (apply_redirections(node->cmd->redirects, data) != 0)
-	{
-		perror("Redirection error");
-		exit(1);
-	}
+    error_exit("Redirection error", strerror(errno), 1);
 	if (!argv || !argv[0])
 		exit(0);
 	path = find_executable(argv[0], envp);
-	if (!path)
-	{
-		fprintf(stderr, "%s: command not found\n", argv[0]);
-		exit(127);
-	}
-	execve(path, argv, envp);
-	perror("execv failed");
-	exit(127);
+  handle_exec_error_path(argv[0], path);
+  execve(path, argv, envp);
+  perror("execve");
+  exit(126);
 }
 
 static int	handle_child_status(pid_t pid, t_data *data)
