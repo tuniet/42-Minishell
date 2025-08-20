@@ -224,6 +224,7 @@ int						heredoc(char *delimiter, t_data *data);
 
 // validate.c
 int						is_numeric(const char *str);
+int						atollong(const char *str, long long *out);
 int						is_valid_identifier(const char *s);
 int						is_protected(char *name);
 

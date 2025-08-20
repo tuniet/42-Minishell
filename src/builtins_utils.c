@@ -60,12 +60,12 @@ int	mini_cd(char **argv, t_data *data)
 
 int	mini_exit(char **argv, t_data *data)
 {
-	int	status;
+	long long	status;
 
 	printf("exit\n");
 	if (!argv[1])
 		exit(data->i_exit);
-	if (!is_numeric(argv[1]))
+	if (!is_numeric(argv[1]) || !atollong(argv[1], &status))
 	{
 		write(2, "exit: numeric argument required\n", 32);
 		exit(2);
@@ -76,7 +76,7 @@ int	mini_exit(char **argv, t_data *data)
 		return (1);
 	}
 	status = ft_atoi(argv[1]);
-	exit(status);
+	exit((int)status);
 }
 
 int	is_builtin(const char *cmd)
