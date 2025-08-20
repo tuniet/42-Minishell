@@ -69,27 +69,26 @@ static int	set_env_var(char ***envp, const char *name, const char *value)
 
 int	mini_export(char **argv, t_data *data)
 {
-	char		*eq;
-	size_t		name_len;
-	char		name[256];
-	const char	*value;
+  int		i;
+  char	*eq;
 
-	if (!argv[1])
-	{
-		write(2, "export: se requiere VARIABLE=VALOR\n", 35);
-		return (1);
-	}
-	eq = strchr(argv[1], '=');
-	if (!eq || eq == argv[1])
-	{
-		write(2, "export: formato incorrecto, use VARIABLE=VALOR\n", 45);
-		return (1);
-	}
-	value = eq + 1;
-	name_len = eq - argv[1];
-	strncpy(name, argv[1], name_len);
-	name[name_len] = '\0';
-	if (set_env_var(&data->envp, name, value) != 0)
-		return (perror("export"), 1);
-	return (0);
+  if (!argv[1])
+    return (0);
+  i = 1;
+  while (argv[i])
+  {
+    if (!is_valid_identifier(argv[i]))
+    {
+      print_export_error(argv[i]);
+      return (1);
+    }
+    eq = ft_strchr(argv[i], '=');
+    if (eq)
+    {
+      *eq = '\0';
+      set_env_var(&data->envp, argv[i], eq + 1);
+    }
+    i++;
+  }
+  return (0);
 }

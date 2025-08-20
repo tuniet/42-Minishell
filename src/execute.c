@@ -39,12 +39,14 @@ int	apply_redirections(t_redirect *redir_list, t_data *data)
 	t_redirect	*redir;
 	int			fd;
 
+  /*
 	t_redirect *aux = redir_list;
 	while (aux)
 	{
 		printf("filename %s\n", aux->filename);
 		aux = aux->next;
 	}
+  */
 	redir = redir_list;
 	while (redir)
 	{
@@ -121,12 +123,14 @@ int	execute_command_node(t_treenode *node, char **envp, t_data *data)
 	char	**argv;
 
 	argv = expand(node->cmd->argv, envp, data->i_exit);
+  /*
 	int i = 0;
 	while (argv[i])
 	{
 		printf("expanded [%d] - %s\n", i+1, argv[i]);
 		i++;
 	}
+  */
 	if (is_builtin(argv[0]))
 		return (execute_builtin(argv, data));
 	pid = fork();

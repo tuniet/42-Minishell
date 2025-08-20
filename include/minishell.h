@@ -207,7 +207,7 @@ int						mini_echo(char **argv);
 int						mini_pwd(void);
 int						mini_env(t_data *data, char **argv);
 int						mini_cd(char **argv, t_data *data);
-int						mini_exit(char **argv);
+int						mini_exit(char **argv, t_data *data);
 int						mini_export(char **argv, t_data *data);
 int						mini_unset(char **argv, t_data *data);
 int						find_env_index(char **envp, const char *name);
@@ -221,5 +221,13 @@ void					sigint_handler_nonl(int sig);
 void					setup_signals(void);
 // heredoc.c
 int						heredoc(char *delimiter, t_data *data);
+
+// validate.c
+int						is_numeric(const char *str);
+int						is_valid_identifier(const char *s);
+int						is_protected(char *name);
+
+// error.c
+void					print_export_error(const char *arg);
 
 #endif

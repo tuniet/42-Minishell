@@ -14,92 +14,102 @@
 
 int	mini_env(t_data *data, char **argv)
 {
-	int	i;
+  int	i;
 
-	i = 0;
-	if (argv[1])
-	{
-		fprintf(stderr, "env: no se permiten argumentos\n");
-		return (1);
-	}
-	while (data->envp[i])
-		printf("%s\n", data->envp[i++]);
-	return (0);
+  i = 0;
+  if (argv[1])
+  {
+    fprintf(stderr, "env: no se permiten argumentos\n");
+    return (1);
+  }
+  while (data->envp[i])
+    printf("%s\n", data->envp[i++]);
+  return (0);
 }
 
 int	mini_cd(char **argv, t_data *data)
 {
-	const char *path;
+  const char *path;
 
-	if (argv[1] && argv[2])
-	{
-		write(2, "cd: solo se permite una ruta\n", 29);
-		return (1);
-	}
-	if (!argv[1])
+  if (argv_len(argv) != 2)
+  {
+    write(2, "cd: too many arguments\n", 23);
+    return (1);
+  }
+  if (!argv[1])
+  {
+    path = mini_getenv("HOME", data->envp);
+    if (!path)
     {
-        path = mini_getenv("HOME", data->envp);
-        if (!path)
-        {
-            write(2, "cd: HOME no está definido\n", 28);
-            return (1);
-        }
+      write(2, "cd: HOME no está definido\n", 26);
+      return (1);
     }
-    else
-        path = argv[1];
-    if (chdir(path) != 0)
-    {
-        perror("cd");
-        return (1);
-    }
-	free(data->pwd);
-	data->pwd = getcwd(NULL, 0);
-  	update_envp(data->envp, "PWD", data->pwd);
-	return (0);
+  }
+  else
+  path = argv[1];
+  if (chdir(path) != 0)
+  {
+    perror("cd");
+    return (1);
+  }
+  free(data->pwd);
+  data->pwd = getcwd(NULL, 0);
+  update_envp(data->envp, "PWD", data->pwd);
+  return (0);
 }
 
-int	mini_exit(char **argv)
+int	mini_exit(char **argv, t_data *data)
 {
 	int	status;
 
-	status = 0;
-	if (argv[1])
-		status = atoi(argv[1]);
 	printf("exit\n");
-	free_argv(argv);
+	if (!argv[1])
+		exit(data->i_exit);
+	if (!is_numeric(argv[1]))
+	{
+		write(2, "exit: numeric argument required\n", 32);
+		exit(2);
+	}
+	if (argv[2])
+	{
+		write(2, "exit: too many arguments\n", 25);
+		return (1);
+	}
+	status = ft_atoi(argv[1]);
 	exit(status);
 }
 
 int	is_builtin(const char *cmd)
 {
-	if (!cmd)
-		return (0);
-	return (ft_strcmp(cmd, "echo") == 0 || ft_strcmp(cmd, "cd") == 0
-		|| ft_strcmp(cmd, "pwd") == 0 || ft_strcmp(cmd, "env") == 0
-		|| ft_strcmp(cmd, "exit") == 0 || ft_strcmp(cmd, "export") == 0
-		|| ft_strcmp(cmd, "unset") == 0);
+  if (!cmd)
+    return (0);
+  return (ft_strcmp(cmd, "echo") == 0 || ft_strcmp(cmd, "cd") == 0
+  || ft_strcmp(cmd, "pwd") == 0 || ft_strcmp(cmd, "env") == 0
+  || ft_strcmp(cmd, "exit") == 0 || ft_strcmp(cmd, "export") == 0
+  || ft_strcmp(cmd, "unset") == 0);
 }
 
 int	execute_builtin(char **argv, t_data *data)
 {
-	int	ret;
+  int	ret;
 
-	if (!argv || !argv[0])
-		ret = 1;
-	if (ft_strcmp(argv[0], "echo") == 0)
-		ret = mini_echo(argv);
-	if (ft_strcmp(argv[0], "cd") == 0)
-		ret = mini_cd(argv, data);
-	if (ft_strcmp(argv[0], "pwd") == 0)
-		ret = mini_pwd();
-	if (ft_strcmp(argv[0], "env") == 0)
-		ret = mini_env(data, argv);
-	if (ft_strcmp(argv[0], "exit") == 0)
-		mini_exit(argv);
-	if (ft_strcmp(argv[0], "export") == 0)
-		ret = mini_export(argv, data);
-	if (ft_strcmp(argv[0], "unset") == 0)
-		ret = mini_unset(argv, data);
-	free_argv(argv);
-	return (ret);
+  if (!argv || !argv[0])
+    ret = 1;
+  if (ft_strcmp(argv[0], "echo") == 0)
+    ret = mini_echo(argv);
+  if (ft_strcmp(argv[0], "cd") == 0)
+    ret = mini_cd(argv, data);
+  if (ft_strcmp(argv[0], "pwd") == 0)
+    ret = mini_pwd();
+  if (ft_strcmp(argv[0], "env") == 0)
+    ret = mini_env(data, argv);
+  if (ft_strcmp(argv[0], "exit") == 0)
+    ret = mini_exit(argv, data);
+  if (ft_strcmp(argv[0], "export") == 0)
+    ret = mini_export(argv, data);
+  if (ft_strcmp(argv[0], "unset") == 0)
+    ret = mini_unset(argv, data);
+  free_argv(argv);
+  data->i_exit = ret;
+  return (ret);
 }

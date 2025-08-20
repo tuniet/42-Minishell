@@ -110,7 +110,7 @@ static char	**expand_token(char *tok, char **envp, int st)
         free(res);
         return (ret);
     }
-    printf("res : %s\n", res);
+    //printf("res : %s\n", res);
     if (!ctx.had_q)
         ret = ft_split(res, ' ');
     else

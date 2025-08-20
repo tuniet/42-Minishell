@@ -32,8 +32,8 @@ int	compute_line(char *line, t_data *data)
 	if (count <= 0)
 		return (0);
 	data->tokens_size = count;
-	printf("tokens_size = [%d]\n", data->tokens_size);
-	print_tokens(data->tokens, data->tokens_size);
+	//printf("tokens_size = [%d]\n", data->tokens_size);
+	//print_tokens(data->tokens, data->tokens_size);
 	start_end[0] = 0;
 	start_end[1] = count - 1;
 	data->ast_root = build_tree(data->tokens, start_end, data);
@@ -48,7 +48,7 @@ static int	handle_input(char *line, t_data *data)
 {
 	if (!compute_line(line, data))
 	{
-		printf("------> compute_line fails\n");
+		//printf("------> compute_line fails\n");
 		free_all(data, 0);
 		free(line);
 		return (0);
@@ -91,7 +91,5 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	setup_signals();
 	main_loop(&data);
-	if (data.i_exit)
-		printf("data i_exit val :  %d\n", data.i_exit);
 	return (free_all(&data, 1), data.i_exit);
 }
