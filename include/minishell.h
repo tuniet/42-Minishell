@@ -177,6 +177,8 @@ char			*expand_other(const char *s, int *i, char **envp,
 char			*expand_double_quote(const char *s, int *i, char **envp,
 					int st);
 char			*expand_single_quote(const char *s, int *i);
+char			*expand_token_build(char *tok, t_expand_ctx *ctx);
+
 
 // expand_wildcard.c
 char			**expand_wildcards(const char *pattern);

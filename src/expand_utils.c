@@ -104,7 +104,7 @@ char	*expand_dispatch(char *tok, int *i, t_expand_ctx *ctx)
 	return (expand_other(tok, i, ctx->envp, ctx->status));
 }
 
-static char	*expand_token_build(char *tok, t_expand_ctx *ctx)
+char	*expand_token_build(char *tok, t_expand_ctx *ctx)
 {
 	char	*res;
 	int		i;

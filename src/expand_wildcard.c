@@ -71,6 +71,22 @@ static char	**realloc_matches(char **matches, int new_size)
 	}
 	return (new_matches);
 }
+static char	**create_no_match_result(const char *pattern)
+{
+	char	**ret;
+
+	ret = malloc(sizeof(char *) * 2);
+	if (!ret)
+		return (NULL);
+	ret[0] = ft_strdup(pattern);
+	if (!ret[0])
+	{
+		free(ret);
+		return (NULL);
+	}
+	ret[1] = NULL;
+	return (ret);
+}
 
 static char	**process_directory_entries(const char *pattern, DIR *dir)
 {

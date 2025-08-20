@@ -38,7 +38,6 @@ int	apply_redirections(t_redirect *redir_list, t_data *data)
 {
 	t_redirect	*redir;
 	int			fd;
-	t_redirect	*aux;
 
 	/*
 		aux = redir_list;
@@ -115,7 +114,6 @@ int	execute_command_node(t_treenode *node, char **envp, t_data *data)
 {
 	pid_t	pid;
 	char	**argv;
-	int		i;
 
 	argv = expand(node->cmd->argv, envp, data->i_exit);
 	/*
