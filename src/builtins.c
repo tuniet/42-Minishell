@@ -26,28 +26,39 @@ static void	print_arg(char *arg)
 	printf("%s", arg);
 }
 
-int	mini_echo(char **argv)
+int	mini_echo(t_treenode *node, t_data *data, char **argv)
 {
 	int	i;
 	int	newline_;
+	pid_t e;
+	int status;
 
+	//status = 0;
 	i = 1;
 	newline_ = 1;
-	if (argv[1] && ft_strcmp(argv[1], "-n") == 0)
+	e = fork();
+	if(e == 0)
 	{
-		newline_ = 0;
-		i = 2;
+		if (apply_echo_redirections(node->cmd->redirects, data) != 0)
+			exit(1);
+		if (argv[1] && ft_strcmp(argv[1], "-n") == 0)
+		{
+			newline_ = 0;
+			i = 2;
+		}
+		while (argv[i])
+		{
+			print_arg(argv[i]);
+			if (argv[i + 1])
+				printf(" ");
+			i++;
+		}
+		if (newline_)
+			printf("\n");
+		exit(0);
 	}
-	while (argv[i])
-	{
-		print_arg(argv[i]);
-		if (argv[i + 1])
-			printf(" ");
-		i++;
-	}
-	if (newline_)
-		printf("\n");
-	return (0);
+	waitpid(e, &status, 0);
+	return (WEXITSTATUS(status));
 }
 
 int	mini_pwd(void)

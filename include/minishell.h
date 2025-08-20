@@ -155,6 +155,9 @@ int				execute_command_node(t_treenode *node, char **envp,
 					t_data *data);
 int				execute_logical_node(t_treenode *node, char **envp,
 					t_data *data);
+int				apply_redirections(t_redirect *redir_list, t_data *data);
+int				apply_echo_redirections(t_redirect *redir_list, t_data *data);
+
 // execute_utils.c
 char			*find_executable(char *command, char **envp);
 
@@ -205,8 +208,8 @@ char			**ft_split(const char *s, char c);
 
 // builtins.c
 int				is_builtin(const char *cmd);
-int				execute_builtin(char **argv, t_data *data);
-int				mini_echo(char **argv);
+int				execute_builtin(t_treenode *node, char **argv, t_data *data);
+int				mini_echo(t_treenode *node, t_data *data, char **argv);
 int				mini_pwd(void);
 int				mini_env(t_data *data, char **argv);
 int				mini_cd(char **argv, t_data *data);
@@ -237,5 +240,6 @@ void			print_export_error(const char *arg);
 void			error_exit(const char *cmd, const char *msg, int i_exit);
 void			handle_exec_error(const char *cmd);
 void			handle_exec_error_path(char *cmd, char *path);
+void			print_echo_error(const char *filename, const char *arg);
 
 #endif

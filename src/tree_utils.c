@@ -69,7 +69,7 @@ static void	print_command(t_treenode *node, int level)
 		print_redirects(node->cmd->redirects, level + 1);
 }
 */
-/*
+/* 
 void	print_tree(t_treenode *node, int level)
 {
 	int	i;

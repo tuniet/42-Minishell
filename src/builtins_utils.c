@@ -86,14 +86,14 @@ int	is_builtin(const char *cmd)
 		|| ft_strcmp(cmd, "unset") == 0);
 }
 
-int	execute_builtin(char **argv, t_data *data)
+int	execute_builtin(t_treenode *node, char **argv, t_data *data)
 {
 	int	ret;
 
 	if (!argv || !argv[0])
 		ret = 1;
 	if (ft_strcmp(argv[0], "echo") == 0)
-		ret = mini_echo(argv);
+		ret = mini_echo(node, data, argv);
 	if (ft_strcmp(argv[0], "cd") == 0)
 		ret = mini_cd(argv, data);
 	if (ft_strcmp(argv[0], "pwd") == 0)

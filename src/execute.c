@@ -63,6 +63,35 @@ int	apply_redirections(t_redirect *redir_list, t_data *data)
 	return (0);
 }
 
+int	apply_echo_redirections(t_redirect *redir_list, t_data *data)
+{
+	t_redirect	*redir;
+	int			fd;
+
+	/*
+		aux = redir_list;
+		while (aux)
+		{
+			printf("filename %s\n", aux->filename);
+			aux = aux->next;
+		}
+	*/
+	redir = redir_list;
+	while (redir)
+	{
+			fd = open_redir(redir, data);
+			if (fd < 0)	
+				return (print_echo_error(redir->filename, strerror(errno)), -1);
+			//if (redir->type == TOKEN_REDIRECT_IN || redir->type == TOKEN_HEREDOC)
+			if(redir->type == TOKEN_REDIRECT_OUT || redir->type == TOKEN_APPEND)
+				dup2(fd, STDOUT_FILENO);
+			close(fd);
+
+		redir = redir->next;
+	}
+	return (0);
+}
+
 static void	run_child_process(t_treenode *node, char **argv, char **envp,
 		t_data *data)
 {
@@ -125,7 +154,7 @@ int	execute_command_node(t_treenode *node, char **envp, t_data *data)
 		}
 	*/
 	if (is_builtin(argv[0]))
-		return (execute_builtin(argv, data));
+		return (execute_builtin(node, argv, data));
 	pid = fork();
 	if (pid == 0)
 		run_child_process(node, argv, envp, data);

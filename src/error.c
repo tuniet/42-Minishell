@@ -12,11 +12,19 @@
 
 #include "../include/minishell.h"
 
+void	print_echo_error(const char *filename, const char *arg)
+{
+	write(2, filename, ft_strlen(filename));
+	write(2, ": ", 3);
+	write(2, arg, ft_strlen(arg));
+	write(2, "\n", 2);
+}
+
 void	print_export_error(const char *arg)
 {
-	write(2, "export: `", 9);
+	write(2, "export: `", 10);
 	write(2, arg, ft_strlen(arg));
-	write(2, "': not a valid identifier\n", 26);
+	write(2, "': not a valid identifier\n", 27);
 }
 
 void	error_exit(const char *cmd, const char *msg, int i_exit)
@@ -24,11 +32,11 @@ void	error_exit(const char *cmd, const char *msg, int i_exit)
 	if (cmd)
 	{
 		write(STDERR_FILENO, cmd, ft_strlen(cmd));
-		write(STDERR_FILENO, ": ", 2);
+		write(STDERR_FILENO, ": ", 3);
 	}
 	if (msg)
 		write(STDERR_FILENO, msg, ft_strlen(msg));
-	write(STDERR_FILENO, "\n", 1);
+	write(STDERR_FILENO, "\n", 2);
 	exit(i_exit);
 }
 

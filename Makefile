@@ -31,7 +31,7 @@ all:	${NAME}
 $(NAME): $(OBJS)
 	@make -C $(LIBFT)
 	@$(CC) $(CFLAGS) $(OBJS) -L$(LIBFT) -lft -o $(NAME) $(LDFLAGS) && \
-	(printf "Compiled successfully.\n")
+	(printf "minishell compiled successfully.\n")
 
 $(OBJ_DIR)/%.o:	$(SRC_DIR)/%.c $(HEADER_FILE)
 	@mkdir -p $(dir $@)
