@@ -89,7 +89,7 @@ int	mini_unset(char **argv, t_data *data)
 		if (!is_valid_identifier(argv[i]))
 		{
 			write(2, "unset: not a valid identifier\n", 31);
-			ret = 1;
+			ret = 0;
 		}
 		else if (!is_protected(argv[i]))
 			unset_env_var(&data->envp, argv[i]);
