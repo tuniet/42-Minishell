@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   tree_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:26:54 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 14:26:56 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/20 22:50:47 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/minishell.h"
 
@@ -20,7 +20,7 @@ int	add_argument(t_command *cmd, t_token *arg)
 	if (cmd->argc + 1 >= cmd->capacity)
 	{
 		new_capacity = cmd->capacity * 2;
-		new_argv = realloc(cmd->argv, sizeof(t_token *) * new_capacity);
+		new_argv = ft_realloc(cmd->argv, sizeof(t_token *) * new_capacity);
 		if (!new_argv)
 			return (0);
 		cmd->argv = new_argv;

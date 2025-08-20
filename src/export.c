@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 21:04:43 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 21:04:44 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/20 22:58:40 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/minishell.h"
 
@@ -21,7 +21,9 @@ static char	*build_env_var(const char *name, const char *value)
 	new_var = malloc(len);
 	if (!new_var)
 		return (NULL);
-	snprintf(new_var, len, "%s=%s", name, value);
+	ft_strcpy(new_var, name);
+	ft_strcat(new_var, "=");
+	ft_strcat(new_var, value);
 	return (new_var);
 }
 
@@ -40,7 +42,7 @@ static int	add_env_var(char ***envp, char *new_var)
 	count = 0;
 	while ((*envp)[count])
 		count++;
-	new_envp = realloc(*envp, sizeof(char *) * (count + 2));
+	new_envp = ft_realloc(*envp, sizeof(char *) * (count + 2));
 	if (!new_envp)
 	{
 		free(new_var);
