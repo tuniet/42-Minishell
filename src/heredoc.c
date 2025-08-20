@@ -1,24 +1,16 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/17 20:22:51 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 01:54:14 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/20 14:28:14 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/20 14:28:17 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-static void sigint_handler_heredoc(int sig)
-{
-    (void)sig;
-    write(1, "\n", 1);            // print newline
-    signal(SIGINT, SIG_DFL);      // reset handler to default
-    kill(getpid(), SIGINT);       // send SIGINT to myself
-}
 
 static char	*expand_variable_(const char *s, int *i, char **envp, int i_exit)
 {
@@ -37,7 +29,7 @@ static char	*expand_variable_(const char *s, int *i, char **envp, int i_exit)
 	start = *i;
 	while (s[*i] && (isalnum(s[*i]) || s[*i] == '_'))
 		(*i)++;
-	name = strndup(s + start, *i - start);
+	name = ft_strndup(s + start, *i - start);
 	if (!name)
 		return (NULL);
 	value = mini_getenv(name, envp);
@@ -67,7 +59,7 @@ static char	*expand_line(char *tok, char **envp, int i_exit)
 			start = i;
 			while (tok[i] && tok[i] != '$')
 				i++;
-			part = strndup(tok + start, i - start);
+			part = ft_strndup(tok + start, i - start);
 		}
 		if (!part)
 			return (free(res), NULL);
@@ -76,77 +68,70 @@ static char	*expand_line(char *tok, char **envp, int i_exit)
 	return (res);
 }
 
-static int heredoc_child(char *delimiter, t_data *data, int pipefd[2])
+static int	process_heredoc_line(char *delimiter, t_data *data, int pipefd)
 {
-    //char *line;
+	char	*raw_line;
+	char	*line;
 
-    signal(SIGINT, sigint_handler_heredoc); // simple setup
-
-    close(pipefd[0]);
-
-while (1)
-{
-    char *raw_line = readline("> ");
-    if (!raw_line) // Ctrl+D
-    {
-        close(pipefd[1]);
-        exit(0);
-    }
-
-    if (strcmp(raw_line, delimiter) == 0)
-    {
-        free(raw_line);
-        close(pipefd[1]);
-        exit(0);
-    }
-
-    char *line = expand_line(raw_line, data->envp, data->i_exit);
-    free(raw_line); // free immediately after expanding
-    if (!line) // allocation failed
-    {
-        close(pipefd[1]);
-        exit(1);
-    }
-
-    write(pipefd[1], line, strlen(line));
-    write(pipefd[1], "\n", 1);
-    free(line);
-}
-    close(pipefd[1]);
-    return (0); // normal end of heredoc
+	raw_line = readline("> ");
+	if (!raw_line)
+	{
+		close(pipefd);
+		exit(0);
+	}
+	if (ft_strcmp(raw_line, delimiter) == 0)
+	{
+		free(raw_line);
+		close(pipefd);
+		exit(0);
+	}
+	line = expand_line(raw_line, data->envp, data->i_exit);
+	free(raw_line);
+	if (!line)
+	{
+		close(pipefd);
+		exit(1);
+	}
+	write(pipefd, line, ft_strlen(line));
+	write(pipefd, "\n", 1);
+	return (free(line), 0);
 }
 
-int heredoc(char *delimiter, t_data *data)
+static int	heredoc_child(char *delimiter, t_data *data, int pipefd[2])
 {
-    int     pipefd[2];
-    pid_t   pid;
-    int     status;
+	signal(SIGINT, sigint_handler_heredoc);
+	close(pipefd[0]);
+	while (1)
+	{
+		process_heredoc_line(delimiter, data, pipefd[1]);
+	}
+	close(pipefd[1]);
+	return (0);
+}
 
-    if (pipe(pipefd) < 0)
-        return (-1);
+int	heredoc(char *delimiter, t_data *data)
+{
+	int		pipefd[2];
+	pid_t	pid;
+	int		status;
 
-    pid = fork();
-    if (pid == -1)
-        return (-1);
-
-    if (pid == 0)
-        heredoc_child(delimiter, data, pipefd);
-
-    // parent ignores SIGINT during heredoc
-    signal(SIGINT, SIG_IGN);
-
-    close(pipefd[1]);
-    waitpid(pid, &status, 0);
-
-    // restore normal signals
-    setup_signals();
-
-    if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+	if (pipe(pipefd) < 0)
+		return (-1);
+	pid = fork();
+	if (pid == -1)
+		return (-1);
+	if (pid == 0)
+		heredoc_child(delimiter, data, pipefd);
+	signal(SIGINT, SIG_IGN);
+	close(pipefd[1]);
+	waitpid(pid, &status, 0);
+	setup_signals();
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
 	{
 		data->i_exit = 130;
 		close(pipefd[0]);
 		return (-1);
 	}
-    data->i_exit = WEXITSTATUS(status);
-    return (pipefd[0]);
+	data->i_exit = WEXITSTATUS(status);
+	return (pipefd[0]);
 }

@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/17 18:14:21 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 01:02:36 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/20 15:06:52 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/20 15:06:54 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -112,126 +112,128 @@ typedef struct s_expand_ctx
 }	t_expand_ctx;
 
 // Prompt functions
-int						set_prompt(t_data *data);
-int						get_prompt(char **p, t_data *data);
-int						init_data(t_data *data, char *envp[]);
-char					*mini_getenv(char *var, char *envp[]);
-int						print_prompt(char *prompt, char *user, char *host,
-							t_data *data);
+int				set_prompt(t_data *data);
+int				get_prompt(char **p, t_data *data);
+int				init_data(t_data *data, char *envp[]);
+char			*mini_getenv(char *var, char *envp[]);
+int				print_prompt(char *prompt, char *user, char *host,
+					t_data *data);
 
 // tokenizer.c
-int						tokenize(char *line, t_token **tokens);
-int						parse_line(char *line, t_data *data);
+int				tokenize(char *line, t_token **tokens);
+int				parse_line(char *line, t_data *data);
 
 // tree.c
-t_treenode				*build_tree(t_token *tokens[], int start_end[], t_data *data);
-void					print_tree(t_treenode *node, int level);
+t_treenode		*build_tree(t_token *tokens[], int start_end[], t_data *data);
+void			print_tree(t_treenode *node, int level);
 // tree_utils.c:
-t_command				*init_command(void);
-int						is_redirection(t_node_type type);
-t_treenode				*new_node(t_node_type type);
-t_treenode				*build_binary_node(t_token *tokens[], int start_end[], int op_index, t_data *data);
+t_command		*init_command(void);
+int				is_redirection(t_node_type type);
+t_treenode		*new_node(t_node_type type);
+t_treenode		*build_binary_node(t_token *tokens[],
+					int start_end[], int op_index, t_data *data);
 
 // tree_utils2.c:
-int						add_redirection(t_command *cmd, t_node_type type,
-							char *filename, t_data *data);
-int						add_argument(t_command *cmd, t_token *arg);
+int				add_redirection(t_command *cmd, t_node_type type,
+					char *filename, t_data *data);
+int				add_argument(t_command *cmd, t_token *arg);
 
 // String functions
-char					*ft_strcpy(char *dest, char *src);
-char					*ft_strcat(char *dest, char *src);
-char					*ft_strdup(const char *src);
-size_t					ft_strlen(const char *s);
-int						ft_strncmp(const char *s1, const char *s2, size_t n);
-void					*ft_memcpy(void *dest, const void *src, size_t n);
-int						ft_strcmp(const char *s1, const char *s2);
-size_t					ft_strlcpy(char *dst, const char *src, size_t size);
+char			*ft_strcpy(char *dest, char *src);
+char			*ft_strcat(char *dest, char *src);
+char			*ft_strdup(const char *src);
+size_t			ft_strlen(const char *s);
+int				ft_strncmp(const char *s1, const char *s2, size_t n);
+void			*ft_memcpy(void *dest, const void *src, size_t n);
+int				ft_strcmp(const char *s1, const char *s2);
+size_t			ft_strlcpy(char *dst, const char *src, size_t size);
 
 // execute.c
-int						execute_tree(t_treenode *node, char **envp,
-							t_data *data);
-int						execute_command_node(t_treenode *node, char **envp,
-							t_data *data);
-int						execute_logical_node(t_treenode *node, char **envp,
-							t_data *data);
+int				execute_tree(t_treenode *node, char **envp,
+					t_data *data);
+int				execute_command_node(t_treenode *node, char **envp,
+					t_data *data);
+int				execute_logical_node(t_treenode *node, char **envp,
+					t_data *data);
 // execute_utils.c
-char					*find_executable(char *command, char **envp);
+char			*find_executable(char *command, char **envp);
 
 // mem.c
-void					mini_free(void **ptr);
+void			mini_free(void **ptr);
 
 // free_tree.c
-void					free_redirects(t_redirect *redir);
-void					free_command(t_command *cmd);
+void			free_redirects(t_redirect *redir);
+void			free_command(t_command *cmd);
 
 // free.c
-void					free_tokens(t_token **tokens);
-void					free_tree(t_treenode *node);
-void					free_all(t_data *data, int flag);
+void			free_tokens(t_token **tokens);
+void			free_tree(t_treenode *node);
+void			free_all(t_data *data, int flag);
 
 // expand.c
-char					**expand(t_token **tokens, char **envp, int i_exit);
-char					*expand_other(const char *s, int *i, char **envp,
-							int st);
-char					*expand_double_quote(const char *s, int *i, char **envp,
-							int st);
-char					*expand_single_quote(const char *s, int *i);
+char			**expand(t_token **tokens, char **envp, int i_exit);
+char			*expand_other(const char *s, int *i, char **envp,
+					int st);
+char			*expand_double_quote(const char *s, int *i, char **envp,
+					int st);
+char			*expand_single_quote(const char *s, int *i);
 
 // expand_wildcard.c
-char					**expand_wildcards(const char *pattern);
+char			**expand_wildcards(const char *pattern);
 
 // expand_utils.c
-char					*strjoin_free(char *s1, char *s2);
-char					*expand_token_(char *tok, char **envp, int i_exit);
-char					*expand_variable(const char *s, int *i, char **envp,
-							int st);
-char					*expand_dispatch(char *tok, int *i, t_expand_ctx *ctx);
+char			*strjoin_free(char *s1, char *s2);
+char			*expand_token_(char *tok, char **envp, int i_exit);
+char			*expand_variable(const char *s, int *i, char **envp,
+					int st);
+char			*expand_dispatch(char *tok, int *i, t_expand_ctx *ctx);
 
 // argv_funcs.c
-void					free_argv(char **argv);
-int						argv_len(char **argv);
-char					**copy_argv(char **src, int *index, char **res);
-char					**argv_join(char **argv, char **exp);
+void			free_argv(char **argv);
+int				argv_len(char **argv);
+char			**copy_argv(char **src, int *index, char **res);
+char			**argv_join(char **argv, char **exp);
 
 // Aux functions
-int						is_metachar(int c);
-char					*get_token_end(char *line);
+int				is_metachar(int c);
+char			*get_token_end(char *line);
 
 // ft_split.c
-char					**ft_split(const char *s, char c);
+char			**ft_split(const char *s, char c);
 
 // builtins.c
-int						is_builtin(const char *cmd);
-int						execute_builtin(char **argv, t_data *data);
-int						mini_echo(char **argv);
-int						mini_pwd(void);
-int						mini_env(t_data *data, char **argv);
-int						mini_cd(char **argv, t_data *data);
-int						mini_exit(char **argv, t_data *data);
-int						mini_export(char **argv, t_data *data);
-int						mini_unset(char **argv, t_data *data);
-int						find_env_index(char **envp, const char *name);
+int				is_builtin(const char *cmd);
+int				execute_builtin(char **argv, t_data *data);
+int				mini_echo(char **argv);
+int				mini_pwd(void);
+int				mini_env(t_data *data, char **argv);
+int				mini_cd(char **argv, t_data *data);
+int				mini_exit(char **argv, t_data *data);
+int				mini_export(char **argv, t_data *data);
+int				mini_unset(char **argv, t_data *data);
+int				find_env_index(char **envp, const char *name);
 
 // envp.c
-int						update_envp(char **envp, char *var, char *new_value);
+int				update_envp(char **envp, char *var, char *new_value);
 
 // signals.c
-void					sigint_handler(int sig);
-void					sigint_handler_nonl(int sig);
-void					setup_signals(void);
+void			ignore_signals(void);
+void			sigint_handler(int sig);
+void			sigint_handler_heredoc(int sig);
+void			setup_signals(void);
 // heredoc.c
-int						heredoc(char *delimiter, t_data *data);
+int				heredoc(char *delimiter, t_data *data);
 
 // validate.c
-int						is_numeric(const char *str);
-int						atollong(const char *str, long long *out);
-int						is_valid_identifier(const char *s);
-int						is_protected(char *name);
+int				is_numeric(const char *str);
+int				atollong(const char *str, long long *out);
+int				is_valid_identifier(const char *s);
+int				is_protected(char *name);
 
 // error.c
-void					print_export_error(const char *arg);
-void					error_exit(const char *cmd, const char *msg, int i_exit);
-void					handle_exec_error(const char *cmd);
-void	handle_exec_error_path(char *cmd, char *path);
+void			print_export_error(const char *arg);
+void			error_exit(const char *cmd, const char *msg, int i_exit);
+void			handle_exec_error(const char *cmd);
+void			handle_exec_error_path(char *cmd, char *path);
 
 #endif

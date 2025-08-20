@@ -1,30 +1,32 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/17 18:17:53 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 23:57:49 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/20 14:27:16 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/20 14:27:17 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
+/*
 void	print_tokens(t_token **tokens, int count)
 {
-	for(int i = 0; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
 		printf("[%d] Type: %d | Value: %s\n", i, tokens[i]->type,
 			tokens[i]->content);
 	}
 }
+*/
 
 int	compute_line(char *line, t_data *data)
 {
 	int	count;
-	int start_end[2];
+	int	start_end[2];
 
 	if (line == NULL || line[0] == '\0')
 		return (0);
@@ -32,14 +34,14 @@ int	compute_line(char *line, t_data *data)
 	if (count <= 0)
 		return (0);
 	data->tokens_size = count;
-	//printf("tokens_size = [%d]\n", data->tokens_size);
-	//print_tokens(data->tokens, data->tokens_size);
+	// printf("tokens_size = [%d]\n", data->tokens_size);
+	// print_tokens(data->tokens, data->tokens_size);
 	start_end[0] = 0;
 	start_end[1] = count - 1;
 	data->ast_root = build_tree(data->tokens, start_end, data);
 	if (!data->ast_root)
 		return (0);
-	//print_tree(data->ast_root, 0);
+	// print_tree(data->ast_root, 0);
 	execute_tree(data->ast_root, data->envp, data);
 	return (1);
 }
@@ -48,7 +50,7 @@ static int	handle_input(char *line, t_data *data)
 {
 	if (!compute_line(line, data))
 	{
-		//printf("------> compute_line fails\n");
+		// printf("------> compute_line fails\n");
 		free_all(data, 0);
 		free(line);
 		return (0);

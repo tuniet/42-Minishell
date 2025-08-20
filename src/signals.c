@@ -1,23 +1,29 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/17 18:18:27 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 01:33:00 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/20 14:29:00 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/20 14:29:01 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	sigint_handler_nonl(int sig)
+void	sigint_handler_heredoc(int sig)
 {
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-	(void) sig;
+	(void)sig;
+	write(1, "\n", 1);
+	signal(SIGINT, SIG_DFL);
+	kill(getpid(), SIGINT);
+}
+
+void	ignore_signals(void)
+{
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 void	sigint_handler(int sig)

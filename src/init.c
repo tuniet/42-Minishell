@@ -57,7 +57,7 @@ char	**aux_envp(void)
 {
 	char	**envp;
 
-	envp = malloc(sizeof(char*) * 4);
+	envp = malloc(sizeof(char *) * 4);
 	if (!envp)
 		return (NULL);
 	envp[0] = ft_strdup("PWD=/sgoinfre/students/lsirpa-g/norm");
@@ -82,7 +82,7 @@ int	init_data(t_data *data, char *envp[])
 		if (data->envp == NULL)
 			return (0);
 	}
-	memset(data->tokens, 0x0, sizeof(data->tokens));
+	ft_memset(data->tokens, 0x0, sizeof(data->tokens));
 	data->pwd = getcwd(NULL, 0);
 	return (1);
 }

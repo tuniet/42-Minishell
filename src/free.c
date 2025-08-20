@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/17 18:16:42 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 00:03:53 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/20 14:29:07 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/20 14:29:09 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -70,6 +70,6 @@ void	free_all(t_data *data, int flag)
 	free_tree(data->ast_root);
 	data->ast_root = NULL;
 	free_tokens(data->tokens);
-	memset(data->tokens, 0x0, sizeof(data->tokens));
+	ft_memset(data->tokens, 0x0, sizeof(data->tokens));
 	data->tokens_size = 0;
 }

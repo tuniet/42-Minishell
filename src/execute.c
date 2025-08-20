@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/17 18:16:04 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 01:02:48 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/20 14:29:19 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/20 14:29:20 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -17,9 +17,9 @@ static int	open_redir(t_redirect *redir, t_data *data)
 	int		fd;
 	char	*filename;
 
-  if (redir->type == TOKEN_HEREDOC)
-    return (dup(redir->hered_fd));
-  filename = expand_token_(redir->filename, data->envp, data->i_exit);
+	if (redir->type == TOKEN_HEREDOC)
+		return (dup(redir->hered_fd));
+	filename = expand_token_(redir->filename, data->envp, data->i_exit);
 	if (!filename)
 		return (-1);
 	if (redir->type == TOKEN_REDIRECT_IN || redir->type == TOKEN_HEREDOC)
@@ -28,8 +28,8 @@ static int	open_redir(t_redirect *redir, t_data *data)
 		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	else if (redir->type == TOKEN_APPEND)
 		fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-  else
-    fd = -1;
+	else
+		fd = -1;
 	free(filename);
 	return (fd);
 }
@@ -38,15 +38,16 @@ int	apply_redirections(t_redirect *redir_list, t_data *data)
 {
 	t_redirect	*redir;
 	int			fd;
+	t_redirect	*aux;
 
-  /*
-	t_redirect *aux = redir_list;
-	while (aux)
-	{
-		printf("filename %s\n", aux->filename);
-		aux = aux->next;
-	}
-  */
+	/*
+		aux = redir_list;
+		while (aux)
+		{
+			printf("filename %s\n", aux->filename);
+			aux = aux->next;
+		}
+	*/
 	redir = redir_list;
 	while (redir)
 	{
@@ -63,44 +64,44 @@ int	apply_redirections(t_redirect *redir_list, t_data *data)
 	return (0);
 }
 
-static void	run_child_process(t_treenode *node,
-				char **argv, char **envp, t_data *data)
+static void	run_child_process(t_treenode *node, char **argv, char **envp,
+		t_data *data)
 {
 	char	*path;
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	if (apply_redirections(node->cmd->redirects, data) != 0)
-    error_exit("Redirection error", strerror(errno), 1);
+		error_exit("Redirection error", strerror(errno), 1);
 	if (!argv || !argv[0])
 		exit(0);
 	path = find_executable(argv[0], envp);
-  handle_exec_error_path(argv[0], path);
-  execve(path, argv, envp);
-  perror("execve");
-  exit(126);
+	handle_exec_error_path(argv[0], path);
+	execve(path, argv, envp);
+	perror("execve");
+	exit(126);
 }
 
 static int	handle_child_status(pid_t pid, t_data *data)
 {
 	int	status;
+	int	sig;
 
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
+	ignore_signals();
 	waitpid(pid, &status, 0);
 	setup_signals();
 	if (WIFSIGNALED(status))
 	{
-		int sig = WTERMSIG(status);
+		sig = WTERMSIG(status);
 		if (sig == SIGINT)
 		{
 			printf("\n");
-			data->i_exit = 130; // Standard exit code for SIGINT
+			data->i_exit = 130;
 		}
 		else if (sig == SIGQUIT)
 		{
 			printf("Quit: (Core dumped)\n");
-			data->i_exit = 131; // Standard exit code for SIGQUIT
+			data->i_exit = 131;
 		}
 		else
 			data->i_exit = 128 + sig;
@@ -114,16 +115,17 @@ int	execute_command_node(t_treenode *node, char **envp, t_data *data)
 {
 	pid_t	pid;
 	char	**argv;
+	int		i;
 
 	argv = expand(node->cmd->argv, envp, data->i_exit);
-  /*
-	int i = 0;
-	while (argv[i])
-	{
-		printf("expanded [%d] - %s\n", i+1, argv[i]);
-		i++;
-	}
-  */
+	/*
+		i = 0;
+		while (argv[i])
+		{
+			printf("expanded [%d] - %s\n", i+1, argv[i]);
+			i++;
+		}
+	*/
 	if (is_builtin(argv[0]))
 		return (execute_builtin(argv, data));
 	pid = fork();

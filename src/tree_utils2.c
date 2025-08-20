@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   tree_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/17 18:19:07 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 01:44:44 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/20 14:26:54 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/20 14:26:56 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -42,24 +42,25 @@ t_redirect	*new_redirect(t_node_type type, char *filename, t_data *data)
 	redir->type = type;
 	redir->next = NULL;
 	if (type == TOKEN_HEREDOC)
-  {
-    redir->filename = NULL;
-	redir->hered_fd = heredoc(expand_token_(filename, data->envp, data->i_exit), data);
-    if (redir->hered_fd < 0)
-      return (free(redir), NULL);
-  }
+	{
+		redir->filename = NULL;
+		redir->hered_fd = heredoc(expand_token_(filename, data->envp,
+					data->i_exit), data);
+		if (redir->hered_fd < 0)
+			return (free(redir), NULL);
+	}
 	else
-  {
-    redir->filename = ft_strdup(filename);
-    if (!redir->filename)
-      return (free(redir), NULL);
+	{
+		redir->filename = ft_strdup(filename);
+		if (!redir->filename)
+			return (free(redir), NULL);
 		redir->hered_fd = -1;
-  }
+	}
 	return (redir);
 }
 
-int	add_redirection(t_command *cmd, t_node_type type,
-				char *filename, t_data *data)
+int	add_redirection(t_command *cmd, t_node_type type, char *filename,
+		t_data *data)
 {
 	t_redirect	*redir;
 	t_redirect	*tmp;

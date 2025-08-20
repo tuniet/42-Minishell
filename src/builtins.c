@@ -33,7 +33,7 @@ int	mini_echo(char **argv)
 
 	i = 1;
 	newline_ = 1;
-	if (argv[1] && strcmp(argv[1], "-n") == 0)
+	if (argv[1] && ft_strcmp(argv[1], "-n") == 0)
 	{
 		newline_ = 0;
 		i = 2;

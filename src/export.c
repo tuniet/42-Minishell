@@ -17,7 +17,7 @@ static char	*build_env_var(const char *name, const char *value)
 	size_t	len;
 	char	*new_var;
 
-	len = strlen(name) + strlen(value) + 2;
+	len = ft_strlen(name) + ft_strlen(value) + 2;
 	new_var = malloc(len);
 	if (!new_var)
 		return (NULL);
@@ -69,26 +69,26 @@ static int	set_env_var(char ***envp, const char *name, const char *value)
 
 int	mini_export(char **argv, t_data *data)
 {
-  int		i;
-  char	*eq;
+	int		i;
+	char	*eq;
 
-  if (!argv[1])
-    return (0);
-  i = 1;
-  while (argv[i])
-  {
-    if (!is_valid_identifier(argv[i]))
-    {
-      print_export_error(argv[i]);
-      return (1);
-    }
-    eq = ft_strchr(argv[i], '=');
-    if (eq)
-    {
-      *eq = '\0';
-      set_env_var(&data->envp, argv[i], eq + 1);
-    }
-    i++;
-  }
-  return (0);
+	if (!argv[1])
+		return (0);
+	i = 1;
+	while (argv[i])
+	{
+		if (!is_valid_identifier(argv[i]))
+		{
+			print_export_error(argv[i]);
+			return (1);
+		}
+		eq = ft_strchr(argv[i], '=');
+		if (eq)
+		{
+			*eq = '\0';
+			set_env_var(&data->envp, argv[i], eq + 1);
+		}
+		i++;
+	}
+	return (0);
 }

@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   tree_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/17 18:19:07 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 21:29:08 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/20 14:25:59 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/20 14:26:02 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -16,7 +16,7 @@ t_command	*init_command(void)
 {
 	t_command	*cmd;
 
-	cmd = calloc(1, sizeof(t_command));
+	cmd = ft_calloc(1, sizeof(t_command));
 	if (!cmd)
 		return (NULL);
 	cmd->argc = 0;
@@ -122,6 +122,7 @@ t_treenode	*build_binary_node(t_token *tokens[], int start_end[],
 	t_treenode	*left;
 	t_treenode	*right;
 	int			se[2];
+
 	se[0] = start_end[0];
 	se[1] = op_index - 1;
 	node = new_node(tokens[op_index]->type);

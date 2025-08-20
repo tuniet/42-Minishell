@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/17 18:16:24 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 20:59:05 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/20 14:30:21 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/20 14:30:22 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -21,7 +21,7 @@ char	*expand_single_quote(const char *s, int *i)
 	start = *i;
 	while (s[*i] && s[*i] != '\'')
 		(*i)++;
-	part = strndup(s + start, *i - start);
+	part = ft_strndup(s + start, *i - start);
 	if (s[*i] == '\'')
 		(*i)++;
 	return (part);
@@ -42,7 +42,7 @@ char	*expand_double_quote(const char *s, int *i, char **envp, int st)
 		{
 			tmp[0] = s[(*i)++];
 			tmp[1] = '\0';
-			res = strjoin_free(res, strdup(tmp));
+			res = strjoin_free(res, ft_strdup(tmp));
 		}
 	}
 	if (s[*i] == '"')
@@ -56,6 +56,7 @@ char	*expand_other(const char *s, int *i, char **envp, int st)
 	char	*ret;
 	char	**aux;
 	int		j;
+
 	if (s[*i] == '$')
 	{
 		ret = expand_variable(s, i, envp, st);
@@ -63,10 +64,10 @@ char	*expand_other(const char *s, int *i, char **envp, int st)
 		free(ret);
 		ret = ft_strdup("");
 		j = 0;
-		while(aux[j])
+		while (aux[j])
 		{
 			ret = strjoin_free(ret, aux[j]);
-			if(aux[j + 1])
+			if (aux[j + 1])
 				ret = strjoin_free(ret, ft_strdup(" "));
 			j++;
 		}
@@ -78,49 +79,33 @@ char	*expand_other(const char *s, int *i, char **envp, int st)
 	return (ft_strdup(tmp));
 }
 
-static char	*expand_token_build(char *tok, t_expand_ctx *ctx)
-{
-    char	*res;
-    int		i;
-    char	*part;
-
-    i = 0;
-    res = strdup("");
-    while (tok[i])
-    {
-        part = expand_dispatch(tok, &i, ctx);
-        res = strjoin_free(res, part);
-    }
-    return res;
-}
-
 static char	**expand_token(char *tok, char **envp, int st)
 {
-    char			*res;
-    char			**ret;
-    t_expand_ctx	ctx;
+	char			*res;
+	char			**ret;
+	t_expand_ctx	ctx;
 
-    ctx.envp = envp;
-    ctx.status = st;
-    ctx.had_q = 0;
-    res = expand_token_build(tok, &ctx);
-    if (!ctx.had_q && strchr(res, '*'))
-    {
-        ret = expand_wildcards(res);
-        free(res);
-        return (ret);
-    }
-    //printf("res : %s\n", res);
-    if (!ctx.had_q)
-        ret = ft_split(res, ' ');
-    else
-    {
-        ret = malloc(sizeof(char *) * 2);
-        ret[0] = ft_strdup(res);
-        ret[1] = NULL;
-    }
-    free(res);
-    return (ret);
+	ctx.envp = envp;
+	ctx.status = st;
+	ctx.had_q = 0;
+	res = expand_token_build(tok, &ctx);
+	if (!ctx.had_q && ft_strchr(res, '*'))
+	{
+		ret = expand_wildcards(res);
+		free(res);
+		return (ret);
+	}
+	// printf("res : %s\n", res);
+	if (!ctx.had_q)
+		ret = ft_split(res, ' ');
+	else
+	{
+		ret = malloc(sizeof(char *) * 2);
+		ret[0] = ft_strdup(res);
+		ret[1] = NULL;
+	}
+	free(res);
+	return (ret);
 }
 
 char	**expand(t_token **tokens, char **envp, int iExit)

@@ -13,39 +13,42 @@
 #include "../include/minishell.h"
 #include <dirent.h>
 
-// Auxiliary function that mimics fnmatch behavior for basic wildcard matching
-static int	wildcard_match(const char *pattern, const char *string)
+static int	check_final_pattern(const char *p)
 {
-	const char	*p = pattern;
-	const char	*s = string;
-	const char	*star_pattern = NULL;
-	const char	*star_string = NULL;
-
-	while (*s)
-	{
-		if (*p == '*')
-		{
-			star_pattern = p++;
-			star_string = s;
-		}
-		else if (*p == '?' || *p == *s)
-		{
-			p++;
-			s++;
-		}
-		else if (star_pattern)
-		{
-			p = star_pattern + 1;
-			s = ++star_string;
-		}
-		else
-		{
-			return (1); // No match
-		}
-	}
 	while (*p == '*')
 		p++;
-	return (*p == 0 ? 0 : 1);
+	if (*p == 0)
+		return (0);
+	return (1);
+}
+
+static int	wildcard_match(const char *pattern, const char *string)
+{
+	const char	*star_str_pat[2];
+
+	star_str_pat[0] = NULL;
+	star_str_pat[1] = NULL;
+	while (*string)
+	{
+		if (*pattern == '*')
+		{
+			star_str_pat[0] = pattern++;
+			star_str_pat[1] = string;
+		}
+		else if (*pattern == '?' || *pattern == *string)
+		{
+			pattern++;
+			string++;
+		}
+		else if (star_str_pat[0])
+		{
+			pattern = star_str_pat[0] + 1;
+			string = ++star_str_pat[1];
+		}
+		else
+			return (1);
+	}
+	return (check_final_pattern(pattern));
 }
 
 static char	**realloc_matches(char **matches, int new_size)
@@ -69,21 +72,12 @@ static char	**realloc_matches(char **matches, int new_size)
 	return (new_matches);
 }
 
-char	**expand_wildcards(const char *pattern)
+static char	**process_directory_entries(const char *pattern, DIR *dir)
 {
-	DIR				*dir;
 	struct dirent	*ent;
 	char			**matches;
 	int				count;
-	char			**ret;
-	dir = opendir(".");
-	if (!dir)
-	{
-		ret = malloc(sizeof(char *) * 2);
-		ret[0] = ft_strdup(pattern);
-		ret[1] = NULL;
-		return (ret);
-	}
+
 	matches = NULL;
 	count = 0;
 	ent = readdir(dir);
@@ -93,23 +87,29 @@ char	**expand_wildcards(const char *pattern)
 		{
 			matches = realloc_matches(matches, count + 2);
 			if (!matches)
-			{
-				closedir(dir);
 				return (NULL);
-			}
 			matches[count] = strdup(ent->d_name);
 			if (!matches[count])
-			{
-				closedir(dir);
 				return (NULL);
-			}
 			count++;
 			matches[count] = NULL;
 		}
 		ent = readdir(dir);
 	}
-	closedir(dir);
 	if (count == 0)
 		return (ft_split(pattern, ' '));
 	return (matches);
+}
+
+char	**expand_wildcards(const char *pattern)
+{
+	DIR		*dir;
+	char	**result;
+
+	dir = opendir(".");
+	if (!dir)
+		return (create_no_match_result(pattern));
+	result = process_directory_entries(pattern, dir);
+	closedir(dir);
+	return (result);
 }

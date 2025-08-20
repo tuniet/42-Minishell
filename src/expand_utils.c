@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   expand_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/17 18:16:30 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/19 20:06:39 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/20 14:31:08 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/20 14:31:09 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -21,16 +21,16 @@ char	*strjoin_free(char *s1, char *s2)
 	if (!s1 && !s2)
 		return (NULL);
 	if (!s1)
-		return (strdup(s2));
+		return (ft_strdup(s2));
 	if (!s2)
 		return (s1);
-	len1 = strlen(s1);
-	len2 = strlen(s2);
+	len1 = ft_strlen(s1);
+	len2 = ft_strlen(s2);
 	res = malloc(len1 + len2 + 1);
 	if (!res)
 		return (free(s1), free(s2), NULL);
-	memcpy(res, s1, len1);
-	memcpy(res + len1, s2, len2);
+	ft_memcpy(res, s1, len1);
+	ft_memcpy(res + len1, s2, len2);
 	res[len1 + len2] = '\0';
 	free(s1);
 	free(s2);
@@ -44,7 +44,7 @@ char	*expand_token_(char *tok, char **envp, int i_exit)
 	int		i;
 
 	i = 0;
-	res = strdup("");
+	res = ft_strdup("");
 	if (!res)
 		return (NULL);
 	while (tok[i])
@@ -74,19 +74,19 @@ char	*expand_variable(const char *s, int *i, char **envp, int st)
 	{
 		(*i)++;
 		snprintf(buf, sizeof(buf), "%d", st);
-		return (strdup(buf));
+		return (ft_strdup(buf));
 	}
-	if (!(ft_isalnum(s[*i])  || s[*i] == '_'))
-			return (strdup("$"));
+	if (!(ft_isalnum(s[*i]) || s[*i] == '_'))
+		return (ft_strdup("$"));
 	start = *i;
 	while (s[*i] && (isalnum(s[*i]) || s[*i] == '_'))
 		(*i)++;
-	name = strndup(s + start, *i - start);
+	name = ft_strndup(s + start, *i - start);
 	value = mini_getenv(name, envp);
 	free(name);
 	if (!value)
-		return (strdup(""));
-	return (strdup(value));
+		return (ft_strdup(""));
+	return (ft_strdup(value));
 }
 
 char	*expand_dispatch(char *tok, int *i, t_expand_ctx *ctx)
@@ -104,7 +104,18 @@ char	*expand_dispatch(char *tok, int *i, t_expand_ctx *ctx)
 	return (expand_other(tok, i, ctx->envp, ctx->status));
 }
 
-int		valid_variable_char(char c)
+static char	*expand_token_build(char *tok, t_expand_ctx *ctx)
 {
-	return (isalnum(c) || c == '_');
+	char	*res;
+	int		i;
+	char	*part;
+
+	i = 0;
+	res = ft_strdup("");
+	while (tok[i])
+	{
+		part = expand_dispatch(tok, &i, ctx);
+		res = strjoin_free(res, part);
+	}
+	return (res);
 }
