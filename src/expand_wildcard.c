@@ -71,6 +71,7 @@ static char	**realloc_matches(char **matches, int new_size)
 	}
 	return (new_matches);
 }
+
 static char	**create_no_match_result(const char *pattern)
 {
 	char	**ret;

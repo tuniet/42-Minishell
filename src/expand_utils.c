@@ -67,13 +67,12 @@ char	*expand_variable(const char *s, int *i, char **envp, int st)
 	int		start;
 	char	*name;
 	char	*value;
-	char	buf[12];
 
 	(*i)++;
 	if (s[*i] == '?')
 	{
 		(*i)++;
-		return (ft_itoa(buf));
+		return (ft_itoa(st));
 	}
 	if (!(ft_isalnum(s[*i]) || s[*i] == '_'))
 		return (ft_strdup("$"));

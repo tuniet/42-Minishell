@@ -122,6 +122,10 @@ int				print_prompt(char *prompt, char *user, char *host,
 // tokenizer.c
 int				tokenize(char *line, t_token **tokens);
 int				parse_line(char *line, t_data *data);
+// tokenizer_utils.c
+int				is_metachar(int c);
+char			*get_token_end(char *line);
+char			*next_token(char **saveptr, char delim);
 
 // tree.c
 t_treenode		*build_tree(t_token *tokens[], int start_end[], t_data *data);
@@ -198,10 +202,6 @@ void			free_argv(char **argv);
 int				argv_len(char **argv);
 char			**copy_argv(char **src, int *index, char **res);
 char			**argv_join(char **argv, char **exp);
-
-// Aux functions
-int				is_metachar(int c);
-char			*get_token_end(char *line);
 
 // ft_split.c
 char			**ft_split(const char *s, char c);

@@ -42,9 +42,12 @@ static char	*search_in_path(char *paths, char *command)
 	char	*full_path;
 	char	*saveptr;
 
-	dir = strtok_r(paths, ":", &saveptr);
+	saveptr = paths;
+	dir = next_token(&saveptr, ':');
 	while (dir)
 	{
+		if (*dir == '\0')
+			dir = ".";
 		full_path = join_path(dir, command);
 		if (!full_path)
 			break ;
@@ -54,7 +57,7 @@ static char	*search_in_path(char *paths, char *command)
 			return (full_path);
 		}
 		free(full_path);
-		dir = strtok_r(NULL, ":", &saveptr);
+		dir = next_token(&saveptr, ':');
 	}
 	free(paths);
 	return (NULL);
@@ -65,9 +68,9 @@ char	*find_executable(char *command, char **envp)
 	char	*path;
 	char	*paths;
 
-	path = mini_getenv("PATH", envp);
 	if (ft_strchr(command, '/'))
 		return (check_direct_path(command));
+	path = mini_getenv("PATH", envp);
 	if (!path)
 		return (NULL);
 	paths = ft_strdup(path);

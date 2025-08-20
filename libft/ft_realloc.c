@@ -13,7 +13,7 @@ void	*ft_realloc(void* ptr, size_t size)
     if (new_ptr == NULL) {
         return NULL;
     }
-    memcpy(new_ptr, ptr, size);
+    ft_memcpy(new_ptr, ptr, size);
     free(ptr);
     return new_ptr;
 }

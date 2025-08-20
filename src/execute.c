@@ -79,14 +79,12 @@ int	apply_echo_redirections(t_redirect *redir_list, t_data *data)
 	redir = redir_list;
 	while (redir)
 	{
-			fd = open_redir(redir, data);
-			if (fd < 0)	
-				return (print_echo_error(redir->filename, strerror(errno)), -1);
-			//if (redir->type == TOKEN_REDIRECT_IN || redir->type == TOKEN_HEREDOC)
-			if(redir->type == TOKEN_REDIRECT_OUT || redir->type == TOKEN_APPEND)
-				dup2(fd, STDOUT_FILENO);
-			close(fd);
-
+		fd = open_redir(redir, data);
+		if (fd < 0)
+			return (print_echo_error(redir->filename, strerror(errno)), -1);
+		if (redir->type == TOKEN_REDIRECT_OUT || redir->type == TOKEN_APPEND)
+			dup2(fd, STDOUT_FILENO);
+		close(fd);
 		redir = redir->next;
 	}
 	return (0);

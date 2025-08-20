@@ -28,16 +28,16 @@ static void	print_arg(char *arg)
 
 int	mini_echo(t_treenode *node, t_data *data, char **argv)
 {
-	int	i;
-	int	newline_;
-	pid_t e;
-	int status;
+	int		i;
+	int		newline_;
+	pid_t	e;
+	int		status;
 
 	//status = 0;
 	i = 1;
 	newline_ = 1;
 	e = fork();
-	if(e == 0)
+	if (e == 0)
 	{
 		if (apply_echo_redirections(node->cmd->redirects, data) != 0)
 			exit(1);

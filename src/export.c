@@ -12,7 +12,7 @@
 
 #include "../include/minishell.h"
 
-static char	*build_env_var(const char *name, const char *value)
+static char	*build_env_var(char *name, char *value)
 {
 	size_t	len;
 	char	*new_var;
@@ -54,7 +54,7 @@ static int	add_env_var(char ***envp, char *new_var)
 	return (0);
 }
 
-static int	set_env_var(char ***envp, const char *name, const char *value)
+static int	set_env_var(char ***envp, char *name, char *value)
 {
 	int		idx;
 	char	*new_var;

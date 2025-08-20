@@ -48,3 +48,23 @@ char	*get_token_end(char *line)
 	}
 	return (line);
 }
+
+char	*next_token(char **saveptr, char delim)
+{
+	char	*start;
+	char	*cur;
+
+	if (!*saveptr || !**saveptr)
+		return (NULL);
+	start = *saveptr;
+	cur = start;
+	while (*cur && *cur != delim)
+		cur++;
+	if (*cur == delim)
+	{
+		*cur = '\0';
+		cur++;
+	}
+	*saveptr = cur;
+	return (start);
+}
