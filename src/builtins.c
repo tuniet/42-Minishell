@@ -1,29 +1,36 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:15:20 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 18:15:23 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/21 19:21:36 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/minishell.h"
 
-static void	print_arg(char *arg)
+static void	print_arg(char **argv, int *i)
 {
 	size_t	len;
 
-	len = ft_strlen(arg);
-	if ((arg[0] == '\'' && arg[len - 1] == '\'')
-		|| (arg[0] == '"' && arg[len - 1] == '"'))
+	while (argv[*i])
 	{
-		arg[len - 1] = '\0';
-		arg++;
+		len = ft_strlen(argv[*i]);
+		if ((argv[*i][0] == '\'' && argv[*i][len - 1] == '\'')
+			|| (argv[*i][0] == '"' && argv[*i][len - 1] == '"'))
+		{
+			argv[*i][len - 1] = '\0';
+			argv[*i]++;
+		}
+		printf("%s", argv[*i]);
+		if (argv[(*i)++])
+			printf(" ");
+		i++;
 	}
-	printf("%s", arg);
+
 }
 
 int	mini_echo(t_treenode *node, t_data *data, char **argv)
@@ -33,7 +40,6 @@ int	mini_echo(t_treenode *node, t_data *data, char **argv)
 	pid_t	e;
 	int		status;
 
-	//status = 0;
 	i = 1;
 	newline_ = 1;
 	e = fork();
@@ -46,13 +52,7 @@ int	mini_echo(t_treenode *node, t_data *data, char **argv)
 			newline_ = 0;
 			i = 2;
 		}
-		while (argv[i])
-		{
-			print_arg(argv[i]);
-			if (argv[i + 1])
-				printf(" ");
-			i++;
-		}
+		print_arg(argv, &i);
 		if (newline_)
 			printf("\n");
 		exit(0);

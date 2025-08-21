@@ -6,7 +6,7 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:26:54 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 22:50:47 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/21 12:05:04 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -45,11 +45,11 @@ t_redirect	*new_redirect(t_node_type type, char *filename, t_data *data)
 	if (type == TOKEN_HEREDOC)
 	{
 		redir->filename = NULL;
-    exp_file = expand_token_(filename, data->envp, data->i_exit);
+		exp_file = expand_token_(filename, data->envp, data->i_exit);
 		redir->hered_fd = heredoc(exp_file, data);
 		if (redir->hered_fd < 0)
 			return (free(exp_file), free(redir), NULL);
-    free(exp_file);
+	free(exp_file);
 	}
 	else
 	{
