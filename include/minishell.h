@@ -14,6 +14,7 @@
 # define MINISHELL_H
 
 # include "../libft/libft.h"
+# include <stdio.h>
 # include "colors.h"
 # include <dirent.h>
 # include <errno.h>
@@ -23,7 +24,6 @@
 # include <readline/readline.h>
 # include <signal.h>
 # include <stdbool.h>
-# include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
 # include <sys/ioctl.h>
@@ -186,7 +186,6 @@ char			*expand_double_quote(const char *s, int *i, char **envp,
 char			*expand_single_quote(const char *s, int *i);
 char			*expand_token_build(char *tok, t_expand_ctx *ctx);
 
-
 // expand_wildcard.c
 char			**expand_wildcards(const char *pattern);
 
@@ -230,16 +229,18 @@ void			setup_signals(void);
 int				heredoc(char *delimiter, t_data *data);
 
 // validate.c
-int				is_numeric(const char *str);
 int				atollong(const char *str, long long *out);
+int				is_numeric(const char *str);
 int				is_valid_identifier(const char *s);
 int				is_protected(char *name);
 
 // error.c
-void			print_export_error(const char *arg);
 void			error_exit(const char *cmd, const char *msg, int i_exit);
-void			handle_exec_error(const char *cmd);
-void			handle_exec_error_path(char *cmd, char *path);
+void			print_export_error(const char *arg);
 void			print_echo_error(const char *filename, const char *arg);
+
+// error2.c
+void			print_syntax_error(t_data *data);
+void			handle_exec_error_path(char *cmd, char *path);
 
 #endif

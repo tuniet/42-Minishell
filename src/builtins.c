@@ -30,7 +30,6 @@ static void	print_arg(char **argv, int *i)
 			printf(" ");
 		(*i)++;
 	}
-
 }
 
 int	mini_echo(t_treenode *node, t_data *data, char **argv)
@@ -52,10 +51,7 @@ int	mini_echo(t_treenode *node, t_data *data, char **argv)
 			newline_ = 0;
 			i = 2;
 		}
-
-			print_arg(argv, &i);
-
-
+		print_arg(argv, &i);
 		if (newline_)
 			printf("\n");
 		exit(0);

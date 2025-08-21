@@ -34,48 +34,11 @@ static int	open_redir(t_redirect *redir, t_data *data)
 	return (fd);
 }
 
-int	apply_redirections(t_redirect *redir_list, t_data *data)
-{
-	t_redirect	*redir;
-	int			fd;
-
-	/*
-		aux = redir_list;
-		while (aux)
-		{
-			printf("filename %s\n", aux->filename);
-			aux = aux->next;
-		}
-	*/
-	redir = redir_list;
-	while (redir)
-	{
-		fd = open_redir(redir, data);
-		if (fd < 0)
-			return (-1);
-		if (redir->type == TOKEN_REDIRECT_IN || redir->type == TOKEN_HEREDOC)
-			dup2(fd, STDIN_FILENO);
-		else
-			dup2(fd, STDOUT_FILENO);
-		close(fd);
-		redir = redir->next;
-	}
-	return (0);
-}
-
 int	apply_echo_redirections(t_redirect *redir_list, t_data *data)
 {
 	t_redirect	*redir;
 	int			fd;
 
-	/*
-		aux = redir_list;
-		while (aux)
-		{
-			printf("filename %s\n", aux->filename);
-			aux = aux->next;
-		}
-	*/
 	redir = redir_list;
 	while (redir)
 	{
@@ -83,6 +46,27 @@ int	apply_echo_redirections(t_redirect *redir_list, t_data *data)
 		if (fd < 0)
 			return (print_echo_error(redir->filename, strerror(errno)), -1);
 		if (redir->type == TOKEN_REDIRECT_OUT || redir->type == TOKEN_APPEND)
+			dup2(fd, STDOUT_FILENO);
+		close(fd);
+		redir = redir->next;
+	}
+	return (0);
+}
+
+int	apply_redirections(t_redirect *redir_list, t_data *data)
+{
+	t_redirect	*redir;
+	int			fd;
+
+	redir = redir_list;
+	while (redir)
+	{
+		fd = open_redir(redir, data);
+		if (fd < 0)
+			return (print_echo_error(redir->filename, strerror(errno)), -1);
+		if (redir->type == TOKEN_REDIRECT_IN || redir->type == TOKEN_HEREDOC)
+			dup2(fd, STDIN_FILENO);
+		else
 			dup2(fd, STDOUT_FILENO);
 		close(fd);
 		redir = redir->next;
@@ -98,7 +82,7 @@ static void	run_child_process(t_treenode *node, char **argv, char **envp,
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	if (apply_redirections(node->cmd->redirects, data) != 0)
-		error_exit("Redirection error", strerror(errno), 1);
+		exit(1);
 	if (!argv || !argv[0])
 		exit(0);
 	path = find_executable(argv[0], envp);
@@ -143,14 +127,6 @@ int	execute_command_node(t_treenode *node, char **envp, t_data *data)
 	char	**argv;
 
 	argv = expand(node->cmd->argv, envp, data->i_exit);
-	/*
-		i = 0;
-		while (argv[i])
-		{
-			printf("expanded [%d] - %s\n", i+1, argv[i]);
-			i++;
-		}
-	*/
 	if (is_builtin(argv[0]))
 		return (execute_builtin(node, argv, data));
 	pid = fork();

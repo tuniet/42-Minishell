@@ -35,7 +35,7 @@ int	add_argument(t_command *cmd, t_token *arg)
 t_redirect	*new_redirect(t_node_type type, char *filename, t_data *data)
 {
 	t_redirect	*redir;
-  char  *exp_file;
+	char	*exp_file;
 
 	redir = malloc(sizeof(t_redirect));
 	if (!redir)
@@ -49,7 +49,7 @@ t_redirect	*new_redirect(t_node_type type, char *filename, t_data *data)
 		redir->hered_fd = heredoc(exp_file, data);
 		if (redir->hered_fd < 0)
 			return (free(exp_file), free(redir), NULL);
-	free(exp_file);
+		free(exp_file);
 	}
 	else
 	{

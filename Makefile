@@ -14,7 +14,7 @@ SRCS		=		$(addprefix $(SRC_DIR)/, \
 					free.c mem.c \
 					builtins.c builtins_utils.c unset.c export.c envp.c\
 					heredoc.c signals.c prompt_utils.c \
-					validate.c error.c )
+					validate.c error.c error2.c)
 
 OBJ_DIR		=		./obj
 OBJS		=		$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

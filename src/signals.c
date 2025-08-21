@@ -15,7 +15,7 @@
 void	sigint_handler_heredoc(int sig)
 {
 	(void)sig;
-	write(1, "\n", 1);
+	write(STDOUT_FILENO, "\n", 1);
 	signal(SIGINT, SIG_DFL);
 	kill(getpid(), SIGINT);
 }

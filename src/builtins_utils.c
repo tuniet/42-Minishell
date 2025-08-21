@@ -19,7 +19,7 @@ int	mini_env(t_data *data, char **argv)
 	i = 0;
 	if (argv[1])
 	{
-		write(2, "env: no se permiten argumentos\n", 32);
+		write(STDERR_FILENO, "env: no se permiten argumentos\n", 32);
 		return (1);
 	}
 	while (data->envp[i])
@@ -33,7 +33,7 @@ int	mini_cd(char **argv, t_data *data)
 
 	if (argv_len(argv) != 2)
 	{
-		write(2, "cd: too many arguments\n", 23);
+		write(STDERR_FILENO, "cd: too many arguments\n", 23);
 		return (1);
 	}
 	if (!argv[1])
@@ -41,7 +41,7 @@ int	mini_cd(char **argv, t_data *data)
 		path = mini_getenv("HOME", data->envp);
 		if (!path)
 		{
-			write(2, "cd: HOME no está definido\n", 26);
+			write(STDERR_FILENO, "cd: HOME no está definido\n", 26);
 			return (1);
 		}
 	}
@@ -64,12 +64,12 @@ int	mini_exit(char **argv, t_data *data)
 		exit(data->i_exit);
 	if (!is_numeric(argv[1]) || !atollong(argv[1], &status))
 	{
-		write(2, "exit: numeric argument required\n", 32);
+		write(STDERR_FILENO, "exit: numeric argument required\n", 32);
 		exit(2);
 	}
 	if (argv[2])
 	{
-		write(2, "exit: too many arguments\n", 25);
+		write(STDERR_FILENO, "exit: too many arguments\n", 25);
 		return (1);
 	}
 	status = ft_atoi(argv[1]);

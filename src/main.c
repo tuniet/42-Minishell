@@ -40,7 +40,7 @@ int	compute_line(char *line, t_data *data)
 	start_end[1] = count - 1;
 	data->ast_root = build_tree(data->tokens, start_end, data);
 	if (!data->ast_root)
-		return (0);
+		return (print_syntax_error(data), 0);
 	// print_tree(data->ast_root, 0);
 	execute_tree(data->ast_root, data->envp, data);
 	return (1);

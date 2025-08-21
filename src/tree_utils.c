@@ -137,8 +137,7 @@ t_treenode	*build_binary_node(t_token *tokens[], int start_end[],
 	if (!right)
 	{
 		free_tree(left);
-		free(node);
-		return (NULL);
+		return (free(node), NULL);
 	}
 	node->left = left;
 	node->right = right;
