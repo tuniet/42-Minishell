@@ -6,22 +6,11 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:27:16 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/22 16:45:02 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:49:11 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-/*
-void	print_tokens(t_token **tokens, int count)
-{
-	for (int i = 0; i < count; i++)
-	{
-		printf("[%d] Type: %d | Value: %s\n", i, tokens[i]->type,
-			tokens[i]->content);
-	}
-}
-*/
 
 int	compute_line(char *line, t_data *data)
 {
@@ -34,14 +23,11 @@ int	compute_line(char *line, t_data *data)
 	if (count <= 0)
 		return (0);
 	data->tokens_size = count;
-	// printf("tokens_size = [%d]\n", data->tokens_size);
-	// print_tokens(data->tokens, data->tokens_size);
 	start_end[0] = 0;
 	start_end[1] = count - 1;
 	data->ast_root = build_tree(data->tokens, start_end, data);
 	if (!data->ast_root)
 		return (print_syntax_error(data), 0);
-	// print_tree(data->ast_root, 0);
 	execute_tree(data->ast_root, data->envp, data);
 	return (1);
 }
@@ -50,7 +36,6 @@ static int	handle_input(char *line, t_data *data)
 {
 	if (!compute_line(line, data))
 	{
-		// printf("------> compute_line fails\n");
 		free_all(data, 0);
 		free(line);
 		return (0);

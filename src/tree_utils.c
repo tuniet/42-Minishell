@@ -6,7 +6,7 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:25:59 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/22 16:26:03 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:49:38 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,70 +30,6 @@ t_command	*init_command(void)
 	cmd->argv[0] = NULL;
 	return (cmd);
 }
-/*
-static void	print_redirects(t_redirect *redir, int level)
-{
-	int	i;
-
-	while (redir)
-	{
-		i = 0;
-		while (i < level)
-		{
-			printf("    ");
-			i++;
-		}
-		printf("Redirect: %s %s\n",
-			redir->type == TOKEN_REDIRECT_IN ? "<" : redir->type == TOKEN_REDIRECT_OUT ? ">" : redir->type == TOKEN_HEREDOC ? "<<" : redir->type == TOKEN_APPEND ? ">>" : "?",
-			redir->filename);
-		redir = redir->next;
-	}
-}
-
-static void	print_command(t_treenode *node, int level)
-{
-	int	i;
-
-	printf("[COMMAND]");
-	if (node->cmd && node->cmd->argv)
-	{
-		i = 0;
-		while (node->cmd->argv[i])
-		{
-			printf(" %s", node->cmd->argv[i]->content);
-			i++;
-		}
-	}
-	printf("\n");
-	if (node->cmd)
-		print_redirects(node->cmd->redirects, level + 1);
-}
-*/
-/* 
-void	print_tree(t_treenode *node, int level)
-{
-	int	i;
-
-	if (!node)
-		return ;
-	print_tree(node->right, level + 1);
-	i = 0;
-	while (i < level)
-	{
-		printf("    ");
-		i++;
-	}
-	if (node->type == TOKEN_PIPE)
-		printf("[PIPE]\n");
-	else if (node->type == TOKEN_AND)
-		printf("[AND]\n");
-	else if (node->type == TOKEN_OR)
-		printf("[OR]\n");
-	else if (node->type == TOKEN_COMMAND)
-		print_command(node, level);
-	print_tree(node->left, level + 1);
-}
-*/
 
 int	is_redirection(t_node_type type)
 {

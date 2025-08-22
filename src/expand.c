@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:30:21 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 14:30:22 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:48:47 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,6 @@ static char	**expand_token(char *tok, char **envp, int st)
 		free(res);
 		return (ret);
 	}
-	// printf("res : %s\n", res);
 	if (!ctx.had_q)
 		ret = ft_split(res, ' ');
 	else

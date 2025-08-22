@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:18:47 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 18:18:48 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:50:24 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-//void	print_tokens(t_token **tokens, int count);
 
 static t_node_type	get_token_type(const char *str)
 {
