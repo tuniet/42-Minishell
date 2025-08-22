@@ -78,11 +78,11 @@ int	main(int argc, char **argv, char **envp)
 	if (!init_data(&data, envp))
 		return (1);
 	setup_signals();
-	shlvl = ft_itoa(ft_atoi(mini_getenv("SHLVL", envp)) + 1);
+	shlvl = ft_itoa(ft_atoi(mini_getenv("SHLVL", data.envp)) + 1);
 	set_env_var(&data.envp, "SHLVL", shlvl);
 	free(shlvl);
 	main_loop(&data);
-	shlvl = ft_itoa(ft_atoi(mini_getenv("SHLVL", envp)) - 1);
+	shlvl = ft_itoa(ft_atoi(mini_getenv("SHLVL", data.envp)) - 1);
 	set_env_var(&data.envp, "SHLVL", shlvl);
 	free(shlvl);
 	return (free_all(&data, 1), data.i_exit);

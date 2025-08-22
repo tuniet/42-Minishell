@@ -19,9 +19,9 @@ SRCS		=		$(addprefix $(SRC_DIR)/, \
 OBJ_DIR		=		./obj
 OBJS		=		$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-#CFLAGS		=		-Wall -Wextra -Werror
+CFLAGS		=		-Wall -Wextra -Werror
 #CFLAGS		=		-g -O0 -Werror
-CFLAGS		=		-g -fsanitize=address -Wall -Wextra -Werror
+#CFLAGS		=		-g -fsanitize=address -Wall -Wextra -Werror
 LDFLAGS		=		-lreadline -lhistory
 #LDFLAGS		=	-L/opt/homebrew/opt/readline/lib -lreadline #-lhistory
 CC			=		gcc

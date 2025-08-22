@@ -79,8 +79,6 @@ int	is_protected(char *name)
 {
 	if (!name)
 		return (0);
-	if (ft_strcmp(name, "PATH") == 0)
-		return (1);
 	if (ft_strcmp(name, "HOME") == 0)
 		return (1);
 	if (ft_strcmp(name, "PWD") == 0)
