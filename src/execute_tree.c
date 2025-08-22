@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_tree.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 20:10:31 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 20:10:33 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/22 19:42:51 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,15 @@ int	execute_pipe_node(t_treenode *node, t_data *data)
 		perror("pipe");
 		return (1);
 	}
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	pid_left = exec_pipe_left(node->left, pipefd, data);
 	pid_right = exec_pipe_right(node->right, pipefd, data);
 	close(pipefd[0]);
 	close(pipefd[1]);
 	waitpid(pid_left, &status_left, 0);
 	waitpid(pid_right, &status_right, 0);
+	setup_signals();
 	data->i_exit = WEXITSTATUS(status_right);
 	return (data->i_exit);
 }

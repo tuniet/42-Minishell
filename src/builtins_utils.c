@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:31:51 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 14:31:55 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/22 20:02:47 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,28 +31,29 @@ int	mini_cd(char **argv, t_data *data)
 {
 	const char	*path;
 
-	if (argv_len(argv) != 2)
-	{
-		write(STDERR_FILENO, "cd: too many arguments\n", 23);
-		return (1);
-	}
+	if (argv_len(argv) > 2)
+		return (write(STDERR_FILENO, "cd: too many arguments\n", 23), 1);
 	if (!argv[1])
 	{
 		path = mini_getenv("HOME", data->envp);
 		if (!path)
-		{
-			write(STDERR_FILENO, "cd: HOME no está definido\n", 26);
-			return (1);
-		}
+			return (write(STDERR_FILENO, "cd: HOME no está definido\n", 26), 1);
 	}
 	else
 		path = argv[1];
+	if (access(mini_getenv("PWD", data->envp), F_OK) != 0)
+	{
+		chdir("/home");
+		data->pwd = getcwd(NULL, 0);
+		update_envp(data->envp, "PWD", data->pwd);
+		return (print_echo_error(path, "No such file or directory"), 1);
+	}
 	if (chdir(path) != 0)
-		return (perror("cd"), 1);
-	free(data->pwd);
+		return (print_echo_error(path, "No such file or directory"), 1);
+	else
+		free(data->pwd);
 	data->pwd = getcwd(NULL, 0);
-	update_envp(data->envp, "PWD", data->pwd);
-	return (0);
+	return (update_envp(data->envp, "PWD", data->pwd), 0);
 }
 
 int	mini_exit(char **argv, t_data *data)

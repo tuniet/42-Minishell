@@ -6,7 +6,7 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:29:19 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/22 17:25:10 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/22 19:37:10 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	apply_redirections(t_redirect *redir_list, t_data *data)
 			dup2(fd, STDIN_FILENO);
 		else
 			dup2(fd, STDOUT_FILENO);
-		//close(fd);
+		close(fd);
 		redir = redir->next;
 	}
 	return (0);
