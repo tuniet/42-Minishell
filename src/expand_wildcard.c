@@ -3,24 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   expand_wildcard.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 21:05:08 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/17 21:05:10 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:27:51 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 #include <dirent.h>
-
-static int	check_final_pattern(const char *p)
-{
-	while (*p == '*')
-		p++;
-	if (*p == 0)
-		return (0);
-	return (1);
-}
 
 static int	wildcard_match(const char *pattern, const char *string)
 {

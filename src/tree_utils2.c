@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   tree_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/20 14:26:54 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/21 12:05:04 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/22 16:25:07 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/22 16:25:40 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -34,8 +34,8 @@ int	add_argument(t_command *cmd, t_token *arg)
 
 t_redirect	*new_redirect(t_node_type type, char *filename, t_data *data)
 {
-	t_redirect	*redir;
-	char	*exp_file;
+	t_redirect		*redir;
+	char			*exp_file;
 
 	redir = malloc(sizeof(t_redirect));
 	if (!redir)

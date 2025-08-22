@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 18:15:20 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/21 20:49:41 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:37:19 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -30,6 +30,25 @@ static void	print_arg(char **argv, int *i)
 			printf(" ");
 		(*i)++;
 	}
+}
+
+static int	apply_echo_redirections(t_redirect *redir_list, t_data *data)
+{
+	t_redirect	*redir;
+	int			fd;
+
+	redir = redir_list;
+	while (redir)
+	{
+		fd = open_redir(redir, data);
+		if (fd < 0)
+			return (print_echo_error(redir->filename, strerror(errno)), -1);
+		if (redir->type == TOKEN_REDIRECT_OUT || redir->type == TOKEN_APPEND)
+			dup2(fd, STDOUT_FILENO);
+		close(fd);
+		redir = redir->next;
+	}
+	return (0);
 }
 
 int	mini_echo(t_treenode *node, t_data *data, char **argv)

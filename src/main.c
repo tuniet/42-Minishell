@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:27:16 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 14:27:17 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:45:02 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,12 +86,19 @@ int	main_loop(t_data *data)
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
+	char	*shlvl;
 
 	if (argc > 1)
 		return (printf("Usage: %s\n", argv[0]), 1);
 	if (!init_data(&data, envp))
 		return (1);
 	setup_signals();
+	shlvl = ft_itoa(ft_atoi(mini_getenv("SHLVL", envp)) + 1);
+	set_env_var(&data.envp, "SHLVL", shlvl);
+	free(shlvl);
 	main_loop(&data);
+	shlvl = ft_itoa(ft_atoi(mini_getenv("SHLVL", envp)) - 1);
+	set_env_var(&data.envp, "SHLVL", shlvl);
+	free(shlvl);
 	return (free_all(&data, 1), data.i_exit);
 }

@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/17 21:04:43 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 22:58:40 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/22 16:26:46 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/22 16:43:16 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -54,7 +54,7 @@ static int	add_env_var(char ***envp, char *new_var)
 	return (0);
 }
 
-static int	set_env_var(char ***envp, char *name, char *value)
+int	set_env_var(char ***envp, char *name, char *value)
 {
 	int		idx;
 	char	*new_var;

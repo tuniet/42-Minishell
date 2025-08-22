@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antoniof <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 15:06:52 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/20 15:06:54 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:34:54 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ int				execute_command_node(t_treenode *node, char **envp,
 int				execute_logical_node(t_treenode *node, char **envp,
 					t_data *data);
 int				apply_redirections(t_redirect *redir_list, t_data *data);
-int				apply_echo_redirections(t_redirect *redir_list, t_data *data);
+int				open_redir(t_redirect *redir, t_data *data);
 
 // execute_utils.c
 char			*find_executable(char *command, char **envp);
@@ -188,6 +188,7 @@ char			*expand_token_build(char *tok, t_expand_ctx *ctx);
 
 // expand_wildcard.c
 char			**expand_wildcards(const char *pattern);
+int				check_final_pattern(const char *p);
 
 // expand_utils.c
 char			*strjoin_free(char *s1, char *s2);
@@ -216,6 +217,7 @@ int				mini_exit(char **argv, t_data *data);
 int				mini_export(char **argv, t_data *data);
 int				mini_unset(char **argv, t_data *data);
 int				find_env_index(char **envp, const char *name);
+int				set_env_var(char ***envp, char *name, char *value);
 
 // envp.c
 int				update_envp(char **envp, char *var, char *new_value);

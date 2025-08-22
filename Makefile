@@ -8,7 +8,7 @@ SRCS		=		$(addprefix $(SRC_DIR)/, \
 					main.c \
 					init.c prompt.c \
 					tokenizer.c tokenizer_utils.c \
-					expand.c expand_wildcard.c expand_utils.c argv_funcs.c \
+					expand.c expand_wildcard.c expand_utils.c argv_funcs.c expand_wildcard_utils.c\
 					execute.c execute_utils.c execute_tree.c\
 					tree.c tree_utils.c tree_utils2.c free_tree.c \
 					free.c mem.c \

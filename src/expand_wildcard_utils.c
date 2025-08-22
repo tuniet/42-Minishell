@@ -1,36 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strndup.c                                       :+:      :+:    :+:   */
+/*   expand_wildcard_utils.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/20 16:05:34 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/22 16:46:32 by antoniof         ###   ########.fr       */
+/*   Created: 2025/08/22 16:28:17 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/22 16:31:37 by antoniof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../include/minishell.h"
 
-char	*ft_strndup(const char *s, size_t n)
+int	check_final_pattern(const char *p)
 {
-	char		*dup;
-	size_t		len;
-	size_t		i;
-
-	len = 0;
-	if (s == NULL)
-		return (NULL);
-	while (len < n && s[len] != '\0')
-		len++;
-	dup = malloc(len + 1);
-	if (dup == NULL)
-		return (NULL);
-	i = -1;
-	while (++i < len)
-	{
-		dup[i] = s[i];
-	}
-	dup[len] = '\0';
-	return (dup);
+	while (*p == '*')
+		p++;
+	if (*p == 0)
+		return (0);
+	return (1);
 }

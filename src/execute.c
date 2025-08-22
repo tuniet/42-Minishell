@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
@@ -6,13 +6,13 @@
 /*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:29:19 by antoniof          #+#    #+#             */
-/*   Updated: 2025/08/21 20:35:22 by antoniof         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:34:47 by antoniof         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-static int	open_redir(t_redirect *redir, t_data *data)
+int	open_redir(t_redirect *redir, t_data *data)
 {
 	int		fd;
 	char	*filename;
@@ -32,25 +32,6 @@ static int	open_redir(t_redirect *redir, t_data *data)
 		fd = -1;
 	free(filename);
 	return (fd);
-}
-
-int	apply_echo_redirections(t_redirect *redir_list, t_data *data)
-{
-	t_redirect	*redir;
-	int			fd;
-
-	redir = redir_list;
-	while (redir)
-	{
-		fd = open_redir(redir, data);
-		if (fd < 0)
-			return (print_echo_error(redir->filename, strerror(errno)), -1);
-		if (redir->type == TOKEN_REDIRECT_OUT || redir->type == TOKEN_APPEND)
-			dup2(fd, STDOUT_FILENO);
-		close(fd);
-		redir = redir->next;
-	}
-	return (0);
 }
 
 int	apply_redirections(t_redirect *redir_list, t_data *data)
