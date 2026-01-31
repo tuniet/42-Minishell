@@ -1,0 +1,83 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tree_utils2.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/22 16:25:07 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/22 16:25:40 by antoniof         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/minishell.h"
+
+int	add_argument(t_command *cmd, t_token *arg)
+{
+	t_token	**new_argv;
+	size_t	new_capacity;
+
+	if (cmd->argc + 1 >= cmd->capacity)
+	{
+		new_capacity = cmd->capacity * 2;
+		new_argv = ft_realloc(cmd->argv, sizeof(t_token *) * new_capacity);
+		if (!new_argv)
+			return (0);
+		cmd->argv = new_argv;
+		cmd->capacity = new_capacity;
+	}
+	cmd->argv[cmd->argc] = arg;
+	cmd->argc++;
+	cmd->argv[cmd->argc] = NULL;
+	return (1);
+}
+
+t_redirect	*new_redirect(t_node_type type, char *filename, t_data *data)
+{
+	t_redirect		*redir;
+	char			*exp_file;
+
+	redir = malloc(sizeof(t_redirect));
+	if (!redir)
+		return (NULL);
+	redir->type = type;
+	redir->next = NULL;
+	if (type == TOKEN_HEREDOC)
+	{
+		redir->filename = NULL;
+		exp_file = expand_token_(filename, data->envp, data->i_exit);
+		redir->hered_fd = heredoc(exp_file, data);
+		if (redir->hered_fd < 0)
+			return (free(exp_file), free(redir), NULL);
+		free(exp_file);
+	}
+	else
+	{
+		redir->filename = ft_strdup(filename);
+		if (!redir->filename)
+			return (free(redir), NULL);
+		redir->hered_fd = -1;
+	}
+	return (redir);
+}
+
+int	add_redirection(t_command *cmd, t_node_type type, char *filename,
+		t_data *data)
+{
+	t_redirect	*redir;
+	t_redirect	*tmp;
+
+	redir = new_redirect(type, filename, data);
+	if (!redir)
+		return (0);
+	if (!cmd->redirects)
+		cmd->redirects = redir;
+	else
+	{
+		tmp = cmd->redirects;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = redir;
+	}
+	return (1);
+}

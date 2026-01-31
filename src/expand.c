@@ -1,0 +1,127 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/20 14:30:21 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/22 16:48:47 by antoniof         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/minishell.h"
+
+char	*expand_single_quote(const char *s, int *i)
+{
+	int		start;
+	char	*part;
+
+	(*i)++;
+	start = *i;
+	while (s[*i] && s[*i] != '\'')
+		(*i)++;
+	part = ft_strndup(s + start, *i - start);
+	if (s[*i] == '\'')
+		(*i)++;
+	return (part);
+}
+
+char	*expand_double_quote(const char *s, int *i, char **envp, int st)
+{
+	char	*res;
+	char	tmp[2];
+
+	(*i)++;
+	res = ft_strdup("");
+	while (s[*i] && s[*i] != '"')
+	{
+		if (s[*i] == '$')
+			res = strjoin_free(res, expand_variable(s, i, envp, st));
+		else
+		{
+			tmp[0] = s[(*i)++];
+			tmp[1] = '\0';
+			res = strjoin_free(res, ft_strdup(tmp));
+		}
+	}
+	if (s[*i] == '"')
+		(*i)++;
+	return (res);
+}
+
+char	*expand_other(const char *s, int *i, char **envp, int st)
+{
+	char	tmp[2];
+	char	*ret;
+	char	**aux;
+	int		j;
+
+	if (s[*i] == '$')
+	{
+		ret = expand_variable(s, i, envp, st);
+		aux = ft_split(ret, ' ');
+		free(ret);
+		ret = ft_strdup("");
+		j = 0;
+		while (aux[j])
+		{
+			ret = strjoin_free(ret, aux[j]);
+			if (aux[j + 1])
+				ret = strjoin_free(ret, ft_strdup(" "));
+			j++;
+		}
+		free(aux);
+		return (ret);
+	}
+	tmp[0] = s[(*i)++];
+	tmp[1] = '\0';
+	return (ft_strdup(tmp));
+}
+
+static char	**expand_token(char *tok, char **envp, int st)
+{
+	char			*res;
+	char			**ret;
+	t_expand_ctx	ctx;
+
+	ctx.envp = envp;
+	ctx.status = st;
+	ctx.had_q = 0;
+	res = expand_token_build(tok, &ctx);
+	if (!ctx.had_q && ft_strchr(res, '*'))
+	{
+		ret = expand_wildcards(res);
+		free(res);
+		return (ret);
+	}
+	if (!ctx.had_q)
+		ret = ft_split(res, ' ');
+	else
+	{
+		ret = malloc(sizeof(char *) * 2);
+		ret[0] = ft_strdup(res);
+		ret[1] = NULL;
+	}
+	free(res);
+	return (ret);
+}
+
+char	**expand(t_token **tokens, char **envp, int iExit)
+{
+	char	**argv;
+	char	**exp;
+	int		i;
+
+	argv = NULL;
+	i = 0;
+	while (tokens[i])
+	{
+		exp = expand_token(tokens[i]->content, envp, iExit);
+		argv = argv_join(argv, exp);
+		if (!argv)
+			free_argv(exp);
+		i++;
+	}
+	return (argv);
+}

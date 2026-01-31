@@ -1,0 +1,12 @@
+.minishell_history
+minishell
+obj/
+*.o
+*.swp
+*.swo
+*.bak
+.vscode/
+.DS_Store
+tester/
+libft/libft.a
+tester*/

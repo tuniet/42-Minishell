@@ -1,0 +1,248 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: antoniof <antoniof@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/20 15:06:52 by antoniof          #+#    #+#             */
+/*   Updated: 2025/08/22 16:34:54 by antoniof         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef MINISHELL_H
+# define MINISHELL_H
+
+# include "../libft/libft.h"
+# include <stdio.h>
+# include "colors.h"
+# include <dirent.h>
+# include <errno.h>
+# include <fcntl.h>
+# include <limits.h>
+# include <readline/history.h>
+# include <readline/readline.h>
+# include <signal.h>
+# include <stdbool.h>
+# include <stdlib.h>
+# include <string.h>
+# include <sys/ioctl.h>
+# include <sys/stat.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <unistd.h>
+// DEFINES
+# define MAX_TOKENS 100
+
+// ENUM
+typedef enum e_node_type
+{
+	TOKEN_WORD = 0,
+	TOKEN_PIPE = 1,
+	TOKEN_REDIRECT_IN = 2,
+	TOKEN_REDIRECT_OUT = 3,
+	TOKEN_APPEND = 4,
+	TOKEN_HEREDOC = 5,
+	TOKEN_AND = 6,
+	TOKEN_OR = 7,
+	TOKEN_VARIABLE = 8,
+	TOKEN_ENV_VAR = 9,
+	TOKEN_COMMAND = 10,
+	TOKEN_AMPERSANT = 11,
+}						t_node_type;
+
+typedef struct s_token
+{
+	t_node_type			type;
+	char				*content;
+}						t_token;
+
+typedef struct s_redirect
+{
+	t_node_type			type;
+	char				*filename;
+	struct s_redirect	*next;
+	int					hered_fd;
+}						t_redirect;
+
+typedef struct s_command
+{
+	t_token				**argv;
+	int					argc;
+	int					capacity;
+	t_redirect			*redirects;
+}						t_command;
+
+typedef struct s_treenode
+{
+	t_node_type			type;
+	struct s_treenode	*left;
+	struct s_treenode	*right;
+	t_command			*cmd;
+}						t_treenode;
+
+typedef struct s_data
+{
+	char				*prompt;
+	char				*pwd;
+	char				*home;
+	char				*user;
+	char				*host;
+	char				**envp;
+	t_token				*tokens[MAX_TOKENS];
+	int					tokens_size;
+	t_treenode			*ast_root;
+	int					i_exit;
+}						t_data;
+
+// CTX STRUCTS
+typedef struct s_parse_ctx
+{
+	t_token		**tokens;
+	int			start;
+	int			end;
+	t_data		*data;
+}	t_parse_ctx;
+
+typedef struct s_expand_ctx
+{
+	char	**envp;
+	int		status;
+	int		had_q;
+}	t_expand_ctx;
+
+// Prompt functions
+int				set_prompt(t_data *data);
+int				get_prompt(char **p, t_data *data);
+int				init_data(t_data *data, char *envp[]);
+char			*mini_getenv(char *var, char *envp[]);
+int				print_prompt(char *prompt, char *user, char *host,
+					t_data *data);
+
+// tokenizer.c
+int				tokenize(char *line, t_token **tokens);
+int				parse_line(char *line, t_data *data);
+// tokenizer_utils.c
+int				is_metachar(int c);
+char			*get_token_end(char *line);
+char			*next_token(char **saveptr, char delim);
+
+// tree.c
+t_treenode		*build_tree(t_token *tokens[], int start_end[], t_data *data);
+void			print_tree(t_treenode *node, int level);
+// tree_utils.c:
+t_command		*init_command(void);
+int				is_redirection(t_node_type type);
+t_treenode		*new_node(t_node_type type);
+t_treenode		*build_binary_node(t_token *tokens[],
+					int start_end[], int op_index, t_data *data);
+
+// tree_utils2.c:
+int				add_redirection(t_command *cmd, t_node_type type,
+					char *filename, t_data *data);
+int				add_argument(t_command *cmd, t_token *arg);
+
+// String functions
+char			*ft_strcpy(char *dest, char *src);
+char			*ft_strcat(char *dest, char *src);
+char			*ft_strdup(const char *src);
+size_t			ft_strlen(const char *s);
+int				ft_strncmp(const char *s1, const char *s2, size_t n);
+void			*ft_memcpy(void *dest, const void *src, size_t n);
+int				ft_strcmp(const char *s1, const char *s2);
+size_t			ft_strlcpy(char *dst, const char *src, size_t size);
+
+// execute.c
+int				execute_tree(t_treenode *node, char **envp,
+					t_data *data);
+int				execute_command_node(t_treenode *node, char **envp,
+					t_data *data);
+int				execute_logical_node(t_treenode *node, char **envp,
+					t_data *data);
+int				apply_redirections(t_redirect *redir_list, t_data *data);
+int				open_redir(t_redirect *redir, t_data *data);
+
+// execute_utils.c
+char			*find_executable(char *command, char **envp);
+
+// mem.c
+void			mini_free(void **ptr);
+
+// free_tree.c
+void			free_redirects(t_redirect *redir);
+void			free_command(t_command *cmd);
+
+// free.c
+void			free_tokens(t_token **tokens);
+void			free_tree(t_treenode *node);
+void			free_all(t_data *data, int flag);
+
+// expand.c
+char			**expand(t_token **tokens, char **envp, int i_exit);
+char			*expand_other(const char *s, int *i, char **envp,
+					int st);
+char			*expand_double_quote(const char *s, int *i, char **envp,
+					int st);
+char			*expand_single_quote(const char *s, int *i);
+char			*expand_token_build(char *tok, t_expand_ctx *ctx);
+
+// expand_wildcard.c
+char			**expand_wildcards(const char *pattern);
+int				check_final_pattern(const char *p);
+
+// expand_utils.c
+char			*strjoin_free(char *s1, char *s2);
+char			*expand_token_(char *tok, char **envp, int i_exit);
+char			*expand_variable(const char *s, int *i, char **envp,
+					int st);
+char			*expand_dispatch(char *tok, int *i, t_expand_ctx *ctx);
+
+// argv_funcs.c
+void			free_argv(char **argv);
+int				argv_len(char **argv);
+char			**copy_argv(char **src, int *index, char **res);
+char			**argv_join(char **argv, char **exp);
+
+// ft_split.c
+char			**ft_split(const char *s, char c);
+
+// builtins.c
+int				is_builtin(const char *cmd);
+int				execute_builtin(t_treenode *node, char **argv, t_data *data);
+int				mini_echo(t_treenode *node, t_data *data, char **argv);
+int				mini_pwd(void);
+int				mini_env(t_data *data, char **argv);
+int				mini_cd(char **argv, t_data *data);
+int				mini_exit(char **argv, t_data *data);
+int				mini_export(char **argv, t_data *data);
+int				mini_unset(char **argv, t_data *data);
+int				find_env_index(char **envp, const char *name);
+int				set_env_var(char ***envp, char *name, char *value);
+
+// envp.c
+int				update_envp(char **envp, char *var, char *new_value);
+
+// signals.c
+void			ignore_signals(void);
+void			sigint_handler(int sig);
+void			sigint_handler_heredoc(int sig);
+void			setup_signals(void);
+// heredoc.c
+int				heredoc(char *delimiter, t_data *data);
+
+// validate.c
+int				atollong(const char *str, long long *out);
+int				is_numeric(const char *str);
+int				is_valid_identifier(const char *s);
+int				is_protected(char *name);
+
+// error.c
+void			error_exit(const char *cmd, const char *msg, int i_exit);
+void			print_export_error(const char *arg);
+void			print_echo_error(const char *filename, const char *arg);
+
+// error2.c
+void			print_syntax_error(t_data *data);
+void			handle_exec_error_path(char *cmd, char *path);
+
+#endif
